@@ -3,9 +3,9 @@
 <template>
   <header>
     <nav>
-      <router-link to="/">Home</router-link>
+      <router-link to="/">Início</router-link>
       <router-link to="/filmes">Filmes</router-link>
-      <router-link to="/tv">Programas de TV</router-link>
+      <router-link to="/tv">Séries</router-link>
     </nav>
   </header>
   <main>
@@ -15,23 +15,33 @@
 
 <style scoped>
 header {
-  height: 3rem;
+  height: 4rem;
   display: flex;
-  background-color: black;
-  color: #fff;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #1a0328;
+  color: #f5d78a;
   font-size: 1.2rem;
-  padding-left: 2rem;
+  padding-right: 3rem;
 }
 
 nav {
-  column-gap: 2rem;
-  margin-bottom: 0;
   display: flex;
-  align-items: center;
+  gap: 2rem;
 }
 
 nav a {
   text-decoration: none;
-  color: #fff;
+  color: #f5d78a;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+nav a.router-link-exact-active {
+  border-bottom: 2px solid #f5d78a;
+}
+
+nav a:hover {
+  color: #ffeeb0;
 }
 </style>
