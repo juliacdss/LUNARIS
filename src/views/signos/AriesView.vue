@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const showModal = ref(false)
 const randomMovie = ref(null)
+const ariesMovies = ref([])
 const isLoading = ref(true)
 
 const signos = [
@@ -13,47 +14,63 @@ const signos = [
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
-// 🎬 Função pra buscar um filme aleatório do gênero Ação/Aventura
+// 🔥 gêneros que combinam com a vibe ariana
+const ariesGenres = ['28', '12', '878', '53'] // ação, aventura, ficção científica, suspense
+
+// 🎬 Buscar filme aleatório
 const fetchRandomMovie = async () => {
-  try {
-    const response = await api.get('discover/movie', {
-      params: {
-        with_genres: '28,12', // Ação e Aventura
-        language: 'pt-BR',
-        sort_by: 'popularity.desc',
-        page: Math.floor(Math.random() * 5) + 1
-      }
-    })
-    const movies = response.data.results
-    randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
-  } catch (error) {
-    console.error('Erro ao buscar filme:', error)
-  } finally {
-    isLoading.value = false
-  }
+  const response = await api.get('discover/movie', {
+    params: {
+      with_genres: ariesGenres.join(','),
+      language: 'pt-BR',
+      sort_by: 'popularity.desc',
+      page: Math.floor(Math.random() * 5) + 1
+    }
+  })
+  const movies = response.data.results
+  randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
 }
 
-// 🔗 Redirecionar para detalhes do filme
+// 🎞️ Buscar lista de filmes vibe ariana
+const fetchAriesMovies = async () => {
+  const response = await api.get('discover/movie', {
+    params: {
+      with_genres: ariesGenres.join(','),
+      language: 'pt-BR',
+      sort_by: 'popularity.desc',
+      page: 1
+    }
+  })
+  ariesMovies.value = response.data.results.slice(0, 20)
+}
+
+// 🔗 Redirecionar p/ detalhes
 const openMovie = (movieId) => {
   router.push({ name: 'MovieDetails', params: { movieId } })
 }
 
-onMounted(fetchRandomMovie)
+onMounted(async () => {
+  try {
+    await Promise.all([fetchRandomMovie(), fetchAriesMovies()])
+  } catch (e) {
+    console.error(e)
+  } finally {
+    isLoading.value = false
+  }
+})
 </script>
 
 <template>
   <div class="sign-container">
-    <div class="sign-content" v-if="!isLoading">
+    <div v-if="!isLoading" class="sign-content">
       <div class="text-side">
         <h1>O universo escolheu um filme pra você, Áries ♈︎</h1>
-        <p class="description">
-          Descubra o que os astros prepararam com base no seu signo.
-        </p>
+        <p class="description">Descubra o que os astros prepararam com base no seu signo.</p>
         <button @click="showModal = true" class="explore-btn">Explorar</button>
       </div>
 
       <div class="movie-side" v-if="randomMovie" @click="openMovie(randomMovie.id)">
-        <h2>🎬 Filme do dia</h2>
+        <h2>Filme do dia</h2>
         <img
           :src="`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`"
           :alt="randomMovie.title"
@@ -63,14 +80,31 @@ onMounted(fetchRandomMovie)
       </div>
     </div>
 
-    <div v-else class="loading">
-      <p>✨ Carregando o filme do universo...</p>
+    <div v-else class="loading"><p>Carregando o filme do universo...</p></div>
+
+    <!--  Lista de filmes vibe ariana -->
+    <div v-if="ariesMovies.length" class="aries-library">
+      <h2 class="library-title">Outros filmes com energia ariana</h2>
+      <div class="movie-list">
+        <div v-for="movie in ariesMovies" :key="movie.id" class="movie-card" @click="openMovie(movie.id)">
+          <img
+            :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
+            :alt="movie.title"
+          />
+          <div class="movie-details">
+            <p class="movie-title">{{ movie.title }}</p>
+            <p class="movie-release-date">
+              {{ new Date(movie.release_date).toLocaleDateString('pt-BR') }}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Modal de signos -->
+    <!-- Modal -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-box">
-        <h3>Escolha outro signo ✨</h3>
+        <h3>Escolha outro signo</h3>
         <div class="sign-buttons">
           <button
             v-for="s in signos"
@@ -94,12 +128,7 @@ onMounted(fetchRandomMovie)
   min-height: 100vh;
   background: radial-gradient(circle at bottom, #2a032f 0%, #1c022c 70%);
   color: #f5d78a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-family: "Poppins", sans-serif;
-  position: relative;
-  overflow: hidden;
   padding: 3rem;
 }
 
@@ -108,7 +137,7 @@ onMounted(fetchRandomMovie)
   align-items: center;
   justify-content: space-between;
   gap: 4rem;
-  z-index: 1;
+  margin-bottom: 4rem;
 }
 
 .text-side {
@@ -122,7 +151,6 @@ onMounted(fetchRandomMovie)
   cursor: pointer;
   transition: transform 0.3s ease;
 }
-
 .movie-side:hover {
   transform: scale(1.05);
 }
@@ -162,13 +190,62 @@ h1 {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .explore-btn:hover {
   background-color: #ff7a7a;
   transform: scale(1.05);
   box-shadow: 0 0 30px rgba(255, 100, 100, 0.7);
 }
 
+.loading {
+  color: #ffeeb0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.aries-library {
+  margin-top: 4rem;
+}
+.library-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #ffeeb0;
+  margin-bottom: 2rem;
+}
+
+.movie-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.movie-card {
+  width: 180px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 10px rgba(255, 80, 80, 0.3);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.movie-card:hover {
+  transform: scale(1.05);
+}
+.movie-card img {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+}
+.movie-details {
+  padding: 0.5rem;
+  text-align: center;
+}
+.movie-release-date {
+  font-size: 0.9rem;
+  color: #f5d78a;
+}
+
+/* modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -199,7 +276,6 @@ h1 {
   justify-content: center;
   gap: 1rem;
 }
-
 .sign-btn {
   background: #ff4e4e;
   border: none;
@@ -210,12 +286,10 @@ h1 {
   cursor: pointer;
   transition: 0.3s;
 }
-
 .sign-btn:hover {
   background: #ff7a7a;
   transform: scale(1.05);
 }
-
 .close-btn {
   margin-top: 2rem;
   background: none;
@@ -226,15 +300,9 @@ h1 {
   cursor: pointer;
   transition: 0.3s;
 }
-
 .close-btn:hover {
   background-color: #f5d78a;
   color: #1a0328;
-}
-
-.loading {
-  color: #ffeeb0;
-  font-size: 1.2rem;
 }
 
 @keyframes fadeIn {
