@@ -28,6 +28,12 @@ const routes = [
     component: () => import('../views/TvDetailsView.vue'),
     props: true,
   },
+  // === ROTAS DOS SIGNOS ===
+  {
+    path: '/aries',
+    name: 'Aries',
+    component: () => import('../views/signos/AriesView.vue'),
+  },
 ]
 
 const router = createRouter({
