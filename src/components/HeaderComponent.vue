@@ -18,9 +18,6 @@ import logo from '@/assets/images/logo.png'
     </div>
   </header>
 
-  <main>
-    <router-view />
-  </main>
 </template>
 
 <style scoped>
