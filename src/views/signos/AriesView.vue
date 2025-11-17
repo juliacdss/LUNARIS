@@ -4,20 +4,22 @@ import api from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
 const showModal = ref(false)
+const showPortalReveal = ref(false)
+
 const randomMovie = ref(null)
 const ariesMovies = ref([])
+const secretMovie = ref(null)
+
 const isLoading = ref(true)
 
-const signos = [
-  'Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem',
-  'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
-]
+// gêneros vibe ariana
+const ariesGenres = ['28', '12', '878', '53']
 
-// 🔥 gêneros que combinam com a vibe ariana
-const ariesGenres = ['28', '12', '878', '53'] // ação, aventura, ficção científica, suspense
+// filme secreto do portal (mistura louca kkk)
+const portalGenres = ['27','80','18','9648','53']
 
-// 🎬 Buscar filme aleatório
 const fetchRandomMovie = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -31,7 +33,6 @@ const fetchRandomMovie = async () => {
   randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
 }
 
-// 🎞️ Buscar lista de filmes vibe ariana
 const fetchAriesMovies = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -44,9 +45,22 @@ const fetchAriesMovies = async () => {
   ariesMovies.value = response.data.results.slice(0, 20)
 }
 
-// 🔗 Redirecionar p/ detalhes
-const openMovie = (movieId) => {
-  router.push({ name: 'MovieDetails', params: { movieId } })
+const fetchSecretMovie = async () => {
+  const response = await api.get('discover/movie', {
+    params: {
+      with_genres: portalGenres.join(','),
+      language: 'pt-BR',
+      sort_by: 'vote_average.desc',
+      page: 1
+    }
+  })
+  const movies = response.data.results
+  secretMovie.value = movies[Math.floor(Math.random() * movies.length)]
+  showPortalReveal.value = true
+}
+
+const openMovie = (id) => {
+  router.push({ name: 'MovieDetails', params: { movieId: id } })
 }
 
 onMounted(async () => {
@@ -58,10 +72,19 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
+
+const carouselTrack = ref(null)
+
+const scrollCarousel = (amount) => {
+  carouselTrack.value.scrollLeft += amount
+}
+
 </script>
 
 <template>
   <div class="sign-container">
+
+    <!-- topo da página -->
     <div v-if="!isLoading" class="sign-content">
       <div class="text-side">
         <h1>O universo escolheu um filme pra você, Áries ♈︎</h1>
@@ -73,51 +96,75 @@ onMounted(async () => {
         <h2>Filme do dia</h2>
         <img
           :src="`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`"
-          :alt="randomMovie.title"
           class="movie-poster"
         />
         <p class="movie-title">{{ randomMovie.title }}</p>
       </div>
     </div>
 
+    <!-- LOADING -->
     <div v-else class="loading"><p>Carregando o filme do universo...</p></div>
 
-    <!--  Lista de filmes vibe ariana -->
-    <div v-if="ariesMovies.length" class="aries-library">
-      <h2 class="library-title">Outros filmes com energia ariana</h2>
-      <div class="movie-list">
-        <div v-for="movie in ariesMovies" :key="movie.id" class="movie-card" @click="openMovie(movie.id)">
-          <img
-            :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
-            :alt="movie.title"
-          />
-          <div class="movie-details">
-            <p class="movie-title">{{ movie.title }}</p>
-            <p class="movie-release-date">
-              {{ new Date(movie.release_date).toLocaleDateString('pt-BR') }}
-            </p>
-          </div>
+    <!-- CARROSSEL -->
+    <h2 class="carousel-title">Filmes que combinam com energia ariana</h2>
+    <div class="carousel">
+      <button class="arrow left" @click="scrollCarousel(-350)">‹</button>
+
+      <div class="carousel-track" ref="carouselTrack">
+        <div
+          v-for="movie in ariesMovies"
+          :key="movie.id"
+          class="carousel-item"
+          @click="openMovie(movie.id)"
+        >
+          <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" />
+        </div>
+      </div>
+
+      <button class="arrow right" @click="scrollCarousel(350)">›</button>
+    </div>
+
+    <!-- GRID COM OS 20 FILMES -->
+    <div class="aries-library">
+      <h2 class="library-title">Biblioteca Ariana</h2>
+
+      <div class="movie-grid">
+        <div
+          v-for="movie in ariesMovies"
+          :key="movie.id"
+          class="grid-card"
+          @click="openMovie(movie.id)"
+        >
+          <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" />
+          <p class="movie-title">{{ movie.title }}</p>
+          <p class="movie-release-date">
+            {{ new Date(movie.release_date).toLocaleDateString('pt-BR') }}
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Modal -->
-    <div v-if="showModal" class="modal-overlay">
-      <div class="modal-box">
-        <h3>Escolha outro signo</h3>
-        <div class="sign-buttons">
-          <button
-            v-for="s in signos"
-            :key="s"
-            class="sign-btn"
-            @click="router.push({ path: `/${s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()}` })"
-          >
-            {{ s }}
-          </button>
+    <!-- PORTAL NO FINAL DA PÁGINA -->
+    <div class="portal-wrapper">
+      <div class="portal" @click="fetchSecretMovie"></div>
+      <p class="portal-text">Clique no portal e receba uma visão</p>
+    </div>
+
+    <!-- MODAL DO PORTAL -->
+    <div v-if="showPortalReveal" class="portal-modal">
+      <div class="portal-modal-content">
+        <h2>Visão do Portal</h2>
+
+        <div v-if="secretMovie" class="portal-movie">
+          <img :src="`https://image.tmdb.org/t/p/w500${secretMovie.poster_path}`" />
+          <h3>{{ secretMovie.title }}</h3>
+          <p>{{ new Date(secretMovie.release_date).toLocaleDateString('pt-BR') }}</p>
         </div>
-        <button class="close-btn" @click="showModal = false">Fechar</button>
+
+        <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -308,5 +355,163 @@ h1 {
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* PORTAL ASTRAL */
+.portal-wrapper {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.portal {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff8a47, #ff3c00, #9b0000);
+  box-shadow: 0 0 25px #ff4500, 0 0 60px #ff3200;
+  animation: portalPulse 2s infinite alternate ease-in-out;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.portal:hover {
+  box-shadow: 0 0 40px #ff7e00, 0 0 90px #ff4500;
+  transform: scale(1.05);
+}
+
+.portal-text {
+  margin-top: 1rem;
+  color: #ffb284;
+  font-size: 1.1rem;
+}
+
+/* MODAL DO PORTAL */
+.portal-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 0, 20, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+.portal-modal-content {
+  background: #2a032f;
+  border: 2px solid #ffb284;
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.portal-movie img {
+  width: 200px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255, 80, 80, 0.5);
+}
+
+.close-portal {
+  margin-top: 1.5rem;
+  background: none;
+  border: 1px solid #ffb284;
+  color: #ffb284;
+  padding: .7rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+@keyframes portalPulse {
+  from { transform: scale(0.95); }
+  to { transform: scale(1.05); }
+}
+
+/* CARROSSEL */
+.carousel-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-top: 4rem;
+  color: #ffeeb0;
+}
+
+.carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.arrow {
+  background: rgba(255, 80, 80, 0.4);
+  border: none;
+  color: #ffeeb0;
+  font-size: 2.5rem;
+  width: 50px;
+  height: 120px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.arrow:hover {
+  background: rgba(255, 80, 80, 0.7);
+}
+
+.carousel-track {
+  overflow-x: auto;
+  display: flex;
+  gap: 1rem;
+  scroll-behavior: smooth;
+  padding: 1rem;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-item img {
+  height: 220px;
+  width: 150px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.carousel-item img:hover {
+  transform: scale(1.07);
+}
+
+/* GRID DE 20 FILMES */
+.movie-grid {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.grid-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding-bottom: 1rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: 0.3s;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(255, 80, 80, 0.3);
+}
+
+.grid-card:hover {
+  transform: scale(1.05);
+}
+
+.grid-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
 }
 </style>
