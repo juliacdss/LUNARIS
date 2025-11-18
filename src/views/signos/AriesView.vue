@@ -6,20 +6,30 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const showModal = ref(false)
-const showPortalReveal = ref(false)
-
 const randomMovie = ref(null)
 const ariesMovies = ref([])
-const secretMovie = ref(null)
-
 const isLoading = ref(true)
 
-// gêneros vibe ariana
+// ⭐ Para o portal:
+const secretMovie = ref(null)
+const showPortalReveal = ref(false)
+
+// ⭐ Para o carrossel:
+const carouselTrack = ref(null)
+const scrollCarousel = (amount) => {
+  if (carouselTrack.value) {
+    carouselTrack.value.scrollBy({ left: amount, behavior: "smooth" })
+  }
+}
+
+const signos = [
+  'Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem',
+  'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
+]
+
 const ariesGenres = ['28', '12', '878', '53']
 
-// filme secreto do portal (mistura louca kkk)
-const portalGenres = ['27','80','18','9648','53']
-
+// 🔥 FILME ALEATÓRIO
 const fetchRandomMovie = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -33,6 +43,7 @@ const fetchRandomMovie = async () => {
   randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
 }
 
+// 🔥 LISTA ARIANA
 const fetchAriesMovies = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -45,22 +56,25 @@ const fetchAriesMovies = async () => {
   ariesMovies.value = response.data.results.slice(0, 20)
 }
 
+// 🔮 PORTAL ASTRAL (pegar outro filme aleatório)
 const fetchSecretMovie = async () => {
   const response = await api.get('discover/movie', {
     params: {
-      with_genres: portalGenres.join(','),
+      with_genres: ariesGenres.join(','),
       language: 'pt-BR',
-      sort_by: 'vote_average.desc',
-      page: 1
+      sort_by: 'popularity.desc',
+      page: Math.floor(Math.random() * 4) + 1
     }
   })
+
   const movies = response.data.results
   secretMovie.value = movies[Math.floor(Math.random() * movies.length)]
   showPortalReveal.value = true
 }
 
-const openMovie = (id) => {
-  router.push({ name: 'MovieDetails', params: { movieId: id } })
+// 🔗 Detalhes
+const openMovie = (movieId) => {
+  router.push({ name: 'MovieDetails', params: { movieId } })
 }
 
 onMounted(async () => {
@@ -72,13 +86,6 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
-
-const carouselTrack = ref(null)
-
-const scrollCarousel = (amount) => {
-  carouselTrack.value.scrollLeft += amount
-}
-
 </script>
 
 <template>
@@ -89,7 +96,40 @@ const scrollCarousel = (amount) => {
       <div class="text-side">
         <h1>O universo escolheu um filme pra você, Áries ♈︎</h1>
         <p class="description">Descubra o que os astros prepararam com base no seu signo.</p>
-        <button @click="showModal = true" class="explore-btn">Explorar</button>
+
+        <!-- BOTÃO EXPLORAR -->
+<button @click="showModal = true" class="explore-btn">
+  Explorar
+</button>
+
+<!-- MODAL DOS SIGNOS -->
+<div v-if="showModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Escolha outro signo</h3>
+
+    <div class="sign-buttons">
+      <button
+        v-for="s in signos"
+        :key="s"
+        class="sign-btn"
+        @click="
+          router.push({
+            path: '/' + s
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .toLowerCase()
+          });
+          showModal = false;
+        "
+      >
+        {{ s }}
+      </button>
+    </div>
+
+    <button class="close-btn" @click="showModal = false">Fechar</button>
+  </div>
+</div>
+
       </div>
 
       <div class="movie-side" v-if="randomMovie" @click="openMovie(randomMovie.id)">
@@ -124,7 +164,7 @@ const scrollCarousel = (amount) => {
       <button class="arrow right" @click="scrollCarousel(350)">›</button>
     </div>
 
-    <!-- GRID COM OS 20 FILMES -->
+    <!-- GRID -->
     <div class="aries-library">
       <h2 class="library-title">Biblioteca Ariana</h2>
 
@@ -144,7 +184,7 @@ const scrollCarousel = (amount) => {
       </div>
     </div>
 
-    <!-- PORTAL NO FINAL DA PÁGINA -->
+    <!-- PORTAL -->
     <div class="portal-wrapper">
       <div class="portal" @click="fetchSecretMovie"></div>
       <p class="portal-text">Clique no portal e receba uma visão</p>
@@ -227,20 +267,26 @@ h1 {
 }
 
 .explore-btn {
-  background-color: #ff4e4e;
+  background: rgba(255, 255, 255, 0.08); /* mais transparente */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  
   color: #fff4c2;
   font-weight: 600;
-  border: none;
+  font-family: "Poppins", sans-serif;
+  border: 1.5px solid rgba(255, 255, 255, 0.45); /* borda mais forte de vidro */
   border-radius: 30px;
   padding: 0.9rem 2rem;
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25); /* glow de vidro */
 }
+
 .explore-btn:hover {
-  background-color: #ff7a7a;
-  transform: scale(1.05);
-  box-shadow: 0 0 30px rgba(255, 100, 100, 0.7);
+  background: rgba(255, 255, 255, 0.15); /* mais “gelado” */
+  transform: scale(1.07);
+  box-shadow: 0 0 40px rgba(255, 150, 150, 0.55); /* glow rosado mais forte */
 }
 
 .loading {
@@ -513,5 +559,65 @@ h1 {
   width: 100%;
   height: 240px;
   object-fit: cover;
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-box {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  color: #ffeeb0;
+  width: 90%;
+  max-width: 450px;
+}
+
+.sign-buttons {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .7rem;
+}
+
+.sign-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffeeb0;
+  border-radius: 12px;
+  padding: .5rem .7rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sign-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(1.05);
+}
+
+.close-btn {
+  margin-top: 1.2rem;
+  background: none;
+  border: 1px solid #ffeeb0;
+  color: #ffeeb0;
+  padding: .6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  background: #ffeeb0;
+  color: #1a0328;
 }
 </style>
