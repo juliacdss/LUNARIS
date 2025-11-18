@@ -351,6 +351,15 @@ h1 {
   justify-content: center;
   z-index: 10;
 }
+.modal-overlay {
+  animation: fadeOverlay 0.3s ease forwards;
+}
+
+@keyframes fadeOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 
 .modal-box {
   background-color: rgba(28, 2, 44, 0.95);
@@ -378,6 +387,7 @@ h1 {
   padding: 0.6rem 1.2rem;
   cursor: pointer;
   transition: 0.3s;
+  font-family: "Poppins", sans-serif;
 }
 .sign-btn:hover {
   background: #ff7a7a;
