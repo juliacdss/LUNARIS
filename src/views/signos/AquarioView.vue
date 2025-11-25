@@ -213,7 +213,6 @@ onMounted(async () => {
 
 .sign-container {
   min-height: 100vh;
-  
   color: #bcecff;
   font-family: "Poppins", sans-serif;
   padding: 3rem;

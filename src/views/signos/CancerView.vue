@@ -208,6 +208,7 @@ onMounted(async () => {
   min-height: 100vh;
   color: #fff;
   padding: 3rem;
+    font-family: "Poppins", sans-serif;
 }
 
 /* CONTEÚDO PRINCIPAL */
@@ -258,25 +259,28 @@ h1 {
   color: #fff1fa;
 }
 
-/* BOTÃO ROMÂNTICO */
+/* BOTÃO GLASS */
 .explore-btn {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(18px);
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
-
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08); /* mais transparente */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  
+  color: #fff4c2;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  border: 1.5px solid rgba(255, 255, 255, 0.45); /* borda mais forte de vidro */
   border-radius: 30px;
   padding: 0.9rem 2rem;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 4px 20px rgba(255, 200, 230, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25); /* glow de vidro */
 }
 
 .explore-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.15); /* mais “gelado” */
   transform: scale(1.07);
-  box-shadow: 0 0 35px rgba(255, 200, 230, 0.5);
+  box-shadow: 0 0 40px rgba(155, 150, 255, 0.55); /* glow rosado mais forte */
 }
 
 .loading {
@@ -317,6 +321,10 @@ h1 {
   color: #ffdcec;
   width: 90%;
   max-width: 450px;
+    /* EFEITO SUAVE */
+  opacity: 0;
+  transform: scale(0.85);
+  animation: modalOpen 0.35s ease forwards;
 }
 
 .sign-buttons {
@@ -335,6 +343,7 @@ h1 {
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
+    font-family: "Poppins", sans-serif;
 }
 .sign-btn:hover {
   background: rgba(255, 255, 255, 0.28);
@@ -355,7 +364,10 @@ h1 {
   background: #ffdcec;
   color: #2c1f27;
 }
-
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
 /* PORTAL LUNAR */
 .portal-wrapper {
   text-align: center;
@@ -508,5 +520,15 @@ h1 {
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
+}
+@keyframes modalOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
