@@ -14,10 +14,8 @@ const signos = [
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
-// 🎀 Gêneros para Peixes (fantasia, romance, drama)
 const piscesGenres = ['14', '10749', '18']
 
-// 🎬 Filme do dia
 const fetchRandomMovie = async () => {
   try {
     const response = await api.get('discover/movie', {
@@ -35,7 +33,6 @@ const fetchRandomMovie = async () => {
   }
 }
 
-// 🎞️ Lista Peixes
 const fetchPiscesMovies = async () => {
   try {
     const response = await api.get('discover/movie', {
@@ -93,7 +90,6 @@ onMounted(async () => {
 
     <div v-else class="loading"><p>Carregando a magia pisciana...</p></div>
 
-    <!-- Lista Peixes -->
     <div v-if="piscesMovies.length" class="pisces-library">
       <h2 class="library-title">Filmes com a sensibilidade e magia de Peixes</h2>
       <div class="movie-list">
@@ -117,7 +113,6 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Modal -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-box">
         <h3>Escolha outro signo</h3>
@@ -140,7 +135,6 @@ onMounted(async () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@600&family=Poppins:wght@400;600&display=swap');
 
-/* 🌸 PEIXES — TONS ROSA/SUAVE/ETÉRICO */
 .sign-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #331433 0%, #4d003d 50%, #66004d 100%);
@@ -155,6 +149,7 @@ onMounted(async () => {
   justify-content: center;
   gap: 4rem;
   margin-bottom: 4rem;
+  margin-left: 15rem;
 }
 
 .text-side {
@@ -220,7 +215,6 @@ h1 {
   font-size: 1.2rem;
 }
 
-/* Lista */
 .pisces-library {
   margin-top: 4rem;
 }
@@ -271,7 +265,6 @@ h1 {
   font-size: 0.85rem;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;

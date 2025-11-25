@@ -14,11 +14,8 @@ const signos = [
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
-// 🖤 Gêneros intensos do signo de Escorpião
 const scorpioGenres = ['27', '53', '80', '9648']
-// terror, suspense, crime, mistério
 
-// 🎬 Buscar filme aleatório
 const fetchRandomMovie = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -32,7 +29,6 @@ const fetchRandomMovie = async () => {
   randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
 }
 
-// 🎞️ Buscar lista de filmes vibe escorpiana
 const fetchScorpioMovies = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -45,7 +41,6 @@ const fetchScorpioMovies = async () => {
   scorpioMovies.value = response.data.results.slice(0, 20)
 }
 
-// 🔗 Redirecionar p/ detalhes
 const openMovie = (movieId) => {
   router.push({ name: 'MovieDetails', params: { movieId } })
 }
@@ -83,7 +78,6 @@ onMounted(async () => {
 
     <div v-else class="loading"><p>Carregando as energias do universo...</p></div>
 
-    <!-- Lista de filmes escorpianos -->
     <div v-if="scorpioMovies.length" class="scorpio-library">
       <h2 class="library-title">Filmes com a energia intensa de Escorpião</h2>
       <div class="movie-list">
@@ -125,7 +119,6 @@ onMounted(async () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@600&family=Poppins:wght@400;600&display=swap');
 
-/* 🖤 TEMA ESCORPIÃO — PRETO PROFUNDO E INTENSO */
 .sign-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #000000, #050505, #0a0a0a);
@@ -134,13 +127,13 @@ onMounted(async () => {
   padding: 3rem;
 }
 
-/* CENTRALIZA A SEÇÃO PRINCIPAL */
 .sign-content {
   display: flex;
   align-items: center;
-  justify-content: center; /* <-- AQUI centraliza */
+  justify-content: center;
   gap: 4rem;
   margin-bottom: 4rem;
+    margin-left: 15rem; 
 }
 
 .text-side {

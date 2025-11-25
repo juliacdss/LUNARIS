@@ -14,10 +14,8 @@ const signos = [
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
-// 🎬 Gêneros com vibe de Libra — romance, drama, fantasia suave
 const libraGenres = ['10749', '18', '14']
 
-// 🎬 Buscar filme aleatório
 const fetchRandomMovie = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -31,7 +29,6 @@ const fetchRandomMovie = async () => {
   randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
 }
 
-// 🎞️ Buscar lista de filmes
 const fetchLibraMovies = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -44,12 +41,10 @@ const fetchLibraMovies = async () => {
   libraMovies.value = response.data.results.slice(0, 20)
 }
 
-// 🔗 Detalhes
 const openMovie = (movieId) => {
   router.push({ name: 'MovieDetails', params: { movieId } })
 }
 
-// Inicialização
 onMounted(async () => {
   try {
     await Promise.all([fetchRandomMovie(), fetchLibraMovies()])
@@ -65,7 +60,6 @@ onMounted(async () => {
   <div class="sign-container">
     <div v-if="!isLoading" class="sign-content">
 
-      <!-- TEXTO -->
       <div class="text-side">
         <h1>O universo escolheu um filme perfeito para você, Libra ♎︎</h1>
         <p class="description">
@@ -76,7 +70,6 @@ onMounted(async () => {
         </button>
       </div>
 
-      <!-- FILME DO DIA -->
       <div class="movie-side" v-if="randomMovie" @click="openMovie(randomMovie.id)">
         <h2>Filme do dia</h2>
         <img
@@ -92,7 +85,6 @@ onMounted(async () => {
       <p>Carregando energias equilibradas do universo...</p>
     </div>
 
-    <!-- LISTA LIBRA -->
     <div v-if="libraMovies.length" class="libra-library">
       <h2 class="library-title">Filmes com a energia leve e romântica de Libra</h2>
 
@@ -118,7 +110,6 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- MODAL -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-box">
         <h3>Escolha outro signo</h3>
@@ -147,7 +138,6 @@ onMounted(async () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-/* 💙 TEMA LIBRA — AZUL CLARO, SUAVE, EQUILIBRADO */
 .sign-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #d7ecff, #b5d8ff, #9bc9ff);
@@ -162,9 +152,9 @@ onMounted(async () => {
   justify-content: center;
   gap: 4rem;
   margin-bottom: 4rem;
+  margin-left: 15rem;
 }
 
-/* TEXTO */
 .text-side {
   flex: 1;
   max-width: 500px;
@@ -181,7 +171,6 @@ h1 {
   margin-bottom: 2rem;
 }
 
-/* BOTÃO */
 .explore-btn {
   background: #74b7ff;
   color: white;
@@ -197,7 +186,6 @@ h1 {
   transform: scale(1.05);
 }
 
-/* FILME DO DIA */
 .movie-side {
   flex: 1;
   text-align: center;
@@ -220,7 +208,6 @@ h1 {
   color: #0b1d35;
 }
 
-/* LISTA */
 .libra-library {
   margin-top: 4rem;
 }
@@ -271,7 +258,6 @@ h1 {
   font-size: 0.85rem;
 }
 
-/* MODAL */
 .modal-overlay {
   position: fixed;
   top: 0;

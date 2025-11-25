@@ -14,10 +14,8 @@ const signos = [
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
-// 🔥 Gêneros que combinam com Leão (fantasia, aventura, ação)
 const leoGenres = ['14', '12', '28']
 
-// 🎬 Buscar filme aleatório
 const fetchRandomMovie = async () => {
   try {
     const response = await api.get('discover/movie', {
@@ -35,7 +33,6 @@ const fetchRandomMovie = async () => {
   }
 }
 
-// 🎞️ Buscar lista de filmes vibração Leão
 const fetchLeoMovies = async () => {
   try {
     const response = await api.get('discover/movie', {
@@ -89,7 +86,6 @@ onMounted(async () => {
 
     <div v-else class="loading"><p>Carregando a energia solar...</p></div>
 
-    <!-- Lista leonina -->
     <div v-if="leoMovies.length" class="leo-library">
       <h2 class="library-title">Filmes com o brilho e força de Leão</h2>
       <div class="movie-list">
@@ -113,7 +109,6 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Modal -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-box">
         <h3>Escolha outro signo</h3>
@@ -136,7 +131,6 @@ onMounted(async () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@600&family=Poppins:wght@400;600&display=swap');
 
-/* 🔥 TEMA LEÃO — LARANJA/DOURADO RADIANTE */
 .sign-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #2a1100, #3c1a00, #4f2100);
@@ -145,13 +139,13 @@ onMounted(async () => {
   padding: 3rem;
 }
 
-/* CENTRALIZA */
 .sign-content {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4rem;
   margin-bottom: 4rem;
+    margin-left: 15rem;
 }
 
 .text-side {
@@ -194,7 +188,6 @@ h1 {
   font-weight: 600;
 }
 
-/* 🔥 BOTÃO */
 .explore-btn {
   background: linear-gradient(135deg, #663000, #a95a00);
   color: #fff3e5;
@@ -217,7 +210,6 @@ h1 {
   font-size: 1.2rem;
 }
 
-/* LISTA */
 .leo-library {
   margin-top: 4rem;
 }
@@ -268,7 +260,6 @@ h1 {
   font-size: 0.85rem;
 }
 
-/* MODAL */
 .modal-overlay {
   position: fixed;
   top: 0;

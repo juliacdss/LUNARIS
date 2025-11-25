@@ -2,17 +2,15 @@
 import { ref, onMounted } from "vue";
 import api from "@/plugins/axios.js";
 
-// estados
 const movieOfTheDay = ref(null);
 const movies = ref([]);
 const loading = ref(true);
 
-// carregar filmes
 const fetchGeminiMovies = async () => {
   try {
     const response = await api.get("discover/movie", {
       params: {
-        with_genres: "35,12", // comédia + aventura = energia de Gêmeos
+        with_genres: "35,12",
         sort_by: "popularity.desc",
         page: 1,
       },
@@ -82,14 +80,12 @@ onMounted(fetchGeminiMovies);
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@600&family=Poppins:wght@400;600&display=swap');
 
-/* 🌞✨ Tema de Gêmeos: Amarelo queimado + dourado suave + toques luminosos */
 .sign-container {
   min-height: 100vh;
   padding: 0 3rem;
   padding-top: 2rem;
   font-family: "Poppins", sans-serif;
 
-  /* fundo que lembra luz, energia e dinamismo */
   background: linear-gradient(
     180deg,
     #fff8d5 0%,
@@ -105,6 +101,7 @@ onMounted(fetchGeminiMovies);
   justify-content: space-between;
   gap: 3.5rem;
   margin-bottom: 3.5rem;
+    margin-left: 15rem;
 }
 
 .text-side {
@@ -124,7 +121,6 @@ h1 {
   color: #6d5b16;
 }
 
-/* botão amarelo-dourado */
 .explore-btn {
   background: linear-gradient(135deg, #fff4a8, #ffe27a);
   color: #5a4a12;
@@ -142,7 +138,6 @@ h1 {
   box-shadow: 0 10px 30px rgba(255, 220, 120, 0.35);
 }
 
-/* poster destaque */
 .movie-side {
   flex: 1;
   text-align: center;
@@ -173,10 +168,6 @@ h1 {
   font-size: 1.1rem;
   text-align: center;
 }
-
-/* ============================= */
-/*        LISTA DE FILMES        */
-/* ============================= */
 
 .gemini-library {
   margin-top: 2.8rem;
@@ -234,7 +225,6 @@ h1 {
   color: #7a6514;
 }
 
-/* responsivo */
 @media (max-width: 900px) {
   .sign-content {
     flex-direction: column;
