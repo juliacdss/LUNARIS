@@ -4,12 +4,17 @@ import HeaderComponent from './components/HeaderComponent.vue'
 
 <template>
   <HeaderComponent />
+  <main>
+    <RouterView />
+  </main>
 </template>
 
 <style>
 main {
-  padding-top: 5rem; /* pra não ficar escondido atrás do header fixo */
   background-color: #1c022c;
   min-height: 100vh;
+  color: #f5d78a;
+  font-family: 'Poppins', sans-serif;
+  display: block;
 }
 </style>
