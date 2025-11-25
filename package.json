@@ -15,10 +15,13 @@
   },
   "dependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@tsparticles/engine": "^3.9.1",
     "@tsparticles/vue3": "^3.0.1",
     "axios": "^1.13.2",
 =======
+=======
+>>>>>>> 85b9ae55b7bb13035c159f1c06117028c596e65c
     "@tsparticles/vue3": "^3.0.1",
     "axios": "^1.13.1",
 >>>>>>> e66373e (FEAT: implement Aries page layout with movie recommendations #4)
