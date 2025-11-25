@@ -14,7 +14,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "axios": "^1.13.1",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/vue3": "^3.0.1",
+    "axios": "^1.13.2",
     "lottie-web": "^5.13.0",
     "pinia": "^3.0.3",
     "tsparticles": "^3.9.1",
