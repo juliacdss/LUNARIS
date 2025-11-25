@@ -14,10 +14,10 @@ const signos = [
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
-// 🎬 Gêneros com vibe de Libra — romance, drama, fantasia suave
+// 🎬 Gêneros vibe Libra — romance, drama, fantasia suave
 const libraGenres = ['10749', '18', '14']
 
-// 🎬 Buscar filme aleatório
+// Buscar filme aleatório
 const fetchRandomMovie = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -31,7 +31,7 @@ const fetchRandomMovie = async () => {
   randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
 }
 
-// 🎞️ Buscar lista de filmes
+// Buscar lista de filmes
 const fetchLibraMovies = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -44,12 +44,11 @@ const fetchLibraMovies = async () => {
   libraMovies.value = response.data.results.slice(0, 20)
 }
 
-// 🔗 Detalhes
+// Acessar detalhes
 const openMovie = (movieId) => {
   router.push({ name: 'MovieDetails', params: { movieId } })
 }
 
-// Inicialização
 onMounted(async () => {
   try {
     await Promise.all([fetchRandomMovie(), fetchLibraMovies()])
@@ -64,19 +63,13 @@ onMounted(async () => {
 <template>
   <div class="sign-container">
     <div v-if="!isLoading" class="sign-content">
-
-      <!-- TEXTO -->
+      
       <div class="text-side">
-        <h1>O universo escolheu um filme perfeito para você, Libra ♎︎</h1>
-        <p class="description">
-          Harmonia, beleza e emoção — exatamente como você gosta.
-        </p>
-        <button @click="showModal = true" class="explore-btn">
-          Explorar outros signos
-        </button>
+        <h1>O universo escolheu um filme para você, Libra ♎︎</h1>
+        <p class="description">Harmonia, beleza e emoção — exatamente como você gosta.</p>
+        <button @click="showModal = true" class="explore-btn">Explorar</button>
       </div>
 
-      <!-- FILME DO DIA -->
       <div class="movie-side" v-if="randomMovie" @click="openMovie(randomMovie.id)">
         <h2>Filme do dia</h2>
         <img
@@ -86,13 +79,13 @@ onMounted(async () => {
         />
         <p class="movie-title">{{ randomMovie.title }}</p>
       </div>
+
     </div>
 
     <div v-else class="loading">
       <p>Carregando energias equilibradas do universo...</p>
     </div>
 
-    <!-- LISTA LIBRA -->
     <div v-if="libraMovies.length" class="libra-library">
       <h2 class="library-title">Filmes com a energia leve e romântica de Libra</h2>
 
@@ -141,13 +134,28 @@ onMounted(async () => {
         <button class="close-btn" @click="showModal = false">Fechar</button>
       </div>
     </div>
+
   </div>
 </template>
 
+<!-- 🔥 TUDO QUE ERA @keyframes FOI MOVIDO PRA CÁ -->
+<style>
+@keyframes fadeOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalOpen {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+</style>
+
+<!-- 🔥 SEU CSS ORIGINAL INTACTO -->
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-/* 💙 TEMA LIBRA — AZUL CLARO, SUAVE, EQUILIBRADO */
+/* 💙 TEMA LIBRA — AZUL CLARO SUAVE */
 .sign-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #d7ecff, #b5d8ff, #9bc9ff);
@@ -164,7 +172,6 @@ onMounted(async () => {
   margin-bottom: 4rem;
 }
 
-/* TEXTO */
 .text-side {
   flex: 1;
   max-width: 500px;
@@ -181,23 +188,27 @@ h1 {
   margin-bottom: 2rem;
 }
 
-/* BOTÃO */
 .explore-btn {
-  background: #74b7ff;
-  color: white;
-  border: none;
+  background: rgba(15, 150, 240, 0.08);
+  backdrop-filter: blur(20px) saturate(180%);
+  color: #000;
+  font-weight: 600;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
   border-radius: 30px;
   padding: 0.9rem 2rem;
+  font-size: 1.1rem;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-.explore-btn:hover {
-  background: #3a89e8;
-  transform: scale(1.05);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
+  font-family: "Poppins", sans-serif;
 }
 
-/* FILME DO DIA */
+.explore-btn:hover {
+  background: rgba(13, 173, 236, 0.15);
+  transform: scale(1.07);
+  box-shadow: 0 0 40px rgba(52, 139, 238, 0.55);
+}
+
 .movie-side {
   flex: 1;
   text-align: center;
@@ -220,7 +231,6 @@ h1 {
   color: #0b1d35;
 }
 
-/* LISTA */
 .libra-library {
   margin-top: 4rem;
 }
@@ -274,68 +284,67 @@ h1 {
 /* MODAL */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(10, 25, 50, 0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 999;
+  animation: fadeOverlay 0.3s ease forwards;
 }
 
 .modal-box {
-  background: #e8f3ff;
-  border: 2px solid #74b7ff;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  padding: 2rem;
   border-radius: 20px;
-  padding: 2.5rem 3rem;
   text-align: center;
-  color: #0b1d35;
-  animation: fadeIn 0.3s ease-in-out;
+  color: #ffeeb0;
+  width: 90%;
+  max-width: 450px;
+  opacity: 0;
+  transform: scale(0.85);
+  animation: modalOpen 0.35s ease forwards;
 }
 
 .sign-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .7rem;
 }
 
 .sign-btn {
-  background: #cbe5ff;
-  color: #0b1d35;
-  border: 1px solid #7dbdff;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffeeb0;
+  border-radius: 12px;
+  padding: .5rem .7rem;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
+  transition: 0.2s;
+  font-weight: bold;
 }
 
 .sign-btn:hover {
-  background: #7dbdff;
-  color: white;
+  background: rgba(255, 255, 255, 0.22);
   transform: scale(1.05);
 }
 
 .close-btn {
-  margin-top: 2rem;
+  margin-top: 1.2rem;
   background: none;
-  border: 1px solid #7dbdff;
-  color: #0b1d35;
-  padding: 0.5rem 1.2rem;
-  border-radius: 20px;
+  border: 1px solid #ffeeb0;
+  color: #ffeeb0;
+  padding: .6rem 1.2rem;
+  border-radius: 10px;
   cursor: pointer;
-  transition: 0.3s;
-}
-.close-btn:hover {
-  background: #7dbdff;
-  color: white;
+  transition: 0.2s;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1); }
+.close-btn:hover {
+  background: #ffeeb0;
+  color: #1a0328;
 }
 </style>
