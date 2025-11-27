@@ -10,32 +10,25 @@ const randomMovie = ref(null)
 const ariesMovies = ref([])
 const isLoading = ref(true)
 
-// ⭐ Para o portal:
-const secretMovie = ref(null)
+// PORTAL
 const showPortalReveal = ref(false)
-
-// ⭐ Para o carrossel:
-const carouselTrack = ref(null)
-const scrollCarousel = (amount) => {
-  if (carouselTrack.value) {
-    carouselTrack.value.scrollBy({ left: amount, behavior: "smooth" })
-  }
-}
+const ariesMessage = ref(null)
 
 const signos = [
   'Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem',
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
+// gêneros de Áries = ação, aventura, sci-fi, thriller
 const ariesGenres = ['28', '12', '878', '53']
 
-// 🔥 FILME ALEATÓRIO
+// FILME ASTRAL ALEATÓRIO
 const fetchRandomMovie = async () => {
   const response = await api.get('discover/movie', {
     params: {
       with_genres: ariesGenres.join(','),
       language: 'pt-BR',
-      sort_by: 'popularity.desc',
+      sort_by: 'vote_average.desc',
       page: Math.floor(Math.random() * 5) + 1
     }
   })
@@ -43,7 +36,7 @@ const fetchRandomMovie = async () => {
   randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
 }
 
-// 🔥 LISTA ARIANA
+// LISTA PADRÃO
 const fetchAriesMovies = async () => {
   const response = await api.get('discover/movie', {
     params: {
@@ -56,23 +49,22 @@ const fetchAriesMovies = async () => {
   ariesMovies.value = response.data.results.slice(0, 20)
 }
 
-// 🔮 PORTAL ASTRAL (pegar outro filme aleatório)
-const fetchSecretMovie = async () => {
-  const response = await api.get('discover/movie', {
-    params: {
-      with_genres: ariesGenres.join(','),
-      language: 'pt-BR',
-      sort_by: 'popularity.desc',
-      page: Math.floor(Math.random() * 4) + 1
-    }
-  })
+// PORTAL — Mensagens Arianas (atitude pura)
+const ariesMessages = [
+  "Vai com força, Áries — você foi feito para começar revoluções.",
+  "Seu fogo abre caminhos que outros têm medo de trilhar.",
+  "Coragem não te falta — só lembre de respirar antes de agir.",
+  "Você não veio ao mundo para ser discreto.",
+  "A vida te dá limites e você transforma em combustível.",
+  "Confie no seu impulso — ele é mais sábio do que parece."
+]
 
-  const movies = response.data.results
-  secretMovie.value = movies[Math.floor(Math.random() * movies.length)]
+const fetchAriesVision = () => {
+  ariesMessage.value =
+    ariesMessages[Math.floor(Math.random() * ariesMessages.length)]
   showPortalReveal.value = true
 }
 
-// 🔗 Detalhes
 const openMovie = (movieId) => {
   router.push({ name: 'MovieDetails', params: { movieId } })
 }
@@ -89,122 +81,94 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="sign-container">
-
-    <!-- topo da página -->
+  <div class="sign-container aries">
     <div v-if="!isLoading" class="sign-content">
+
       <div class="text-side">
-        <h1>O universo escolheu um filme pra você, Áries ♈︎</h1>
-        <p class="description">Descubra o que os astros prepararam com base no seu signo.</p>
+        <h1>O universo escolheu um filme para você, Áries ♈︎</h1>
+        <p class="description">
+          Intenso, impulsivo e cheio de energia — assim como você, Áries.
+          Aqui estão filmes explosivos, ousados e cheios de ação para combinar com o seu fogo.
+        </p>
 
-        <!-- BOTÃO EXPLORAR -->
-<button @click="showModal = true" class="explore-btn">
-  Explorar
-</button>
-
-<!-- MODAL DOS SIGNOS -->
-<div v-if="showModal" class="modal-overlay">
-  <div class="modal-box">
-    <h3>Escolha outro signo</h3>
-
-    <div class="sign-buttons">
-      <button
-        v-for="s in signos"
-        :key="s"
-        class="sign-btn"
-        @click="
-          router.push({
-            path: '/' + s
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .toLowerCase()
-          });
-          showModal = false;
-        "
-      >
-        {{ s }}
-      </button>
-    </div>
-
-    <button class="close-btn" @click="showModal = false">Fechar</button>
-  </div>
-</div>
-
+        <button @click="showModal = true" class="explore-btn">
+          Explorar
+        </button>
       </div>
 
       <div class="movie-side" v-if="randomMovie" @click="openMovie(randomMovie.id)">
         <h2>Filme do dia</h2>
+
         <img
           :src="`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`"
+          :alt="randomMovie.title"
           class="movie-poster"
         />
+
         <p class="movie-title">{{ randomMovie.title }}</p>
       </div>
     </div>
 
-    <!-- LOADING -->
-    <div v-else class="loading"><p>Carregando o filme do universo...</p></div>
+    <div v-else class="loading"><p>Carregando o fogo astral...</p></div>
 
-    <!-- CARROSSEL -->
-    <h2 class="carousel-title">Filmes que combinam com energia ariana</h2>
-    <div class="carousel">
-      <button class="arrow left" @click="scrollCarousel(-350)">‹</button>
+    <!-- lista ariana -->
+    <div v-if="ariesMovies.length" class="aries-library">
+      <h2 class="library-title">Filmes para o fogo indomável de Áries</h2>
 
-      <div class="carousel-track" ref="carouselTrack">
+      <div class="movie-list">
         <div
           v-for="movie in ariesMovies"
           :key="movie.id"
-          class="carousel-item"
+          class="movie-card"
           @click="openMovie(movie.id)"
         >
-          <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" />
-        </div>
-      </div>
-
-      <button class="arrow right" @click="scrollCarousel(350)">›</button>
-    </div>
-
-    <!-- GRID -->
-    <div class="aries-library">
-      <h2 class="library-title">Biblioteca Ariana</h2>
-
-      <div class="movie-grid">
-        <div
-          v-for="movie in ariesMovies"
-          :key="movie.id"
-          class="grid-card"
-          @click="openMovie(movie.id)"
-        >
-          <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" />
-          <p class="movie-title">{{ movie.title }}</p>
-          <p class="movie-release-date">
-            {{ new Date(movie.release_date).toLocaleDateString('pt-BR') }}
-          </p>
+          <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" :alt="movie.title" />
+          <div class="movie-details">
+            <p class="movie-title">{{ movie.title }}</p>
+            <p class="movie-release-date">
+              {{ movie.release_date ? new Date(movie.release_date).toLocaleDateString('pt-BR') : '' }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- PORTAL -->
+    <!-- modal signos -->
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Escolha outro signo</h3>
+
+        <div class="sign-buttons">
+          <button
+            v-for="s in signos"
+            :key="s"
+            class="sign-btn"
+            @click="router.push({ path: `/${s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()}` })"
+          >
+            {{ s }}
+          </button>
+        </div>
+
+        <button class="close-btn" @click="showModal = false">Fechar</button>
+      </div>
+    </div>
+
+    <!-- PORTAL ÁRIANO -->
     <div class="portal-wrapper">
-      <div class="portal" @click="fetchSecretMovie"></div>
-      <p class="portal-text">Clique no portal e receba uma visão</p>
+      <div class="portal" @click="fetchAriesVision"></div>
+      <p class="portal-text">Clique no portal e receba uma visão ariana</p>
     </div>
 
-    <!-- MODAL DO PORTAL -->
     <div v-if="showPortalReveal" class="portal-modal">
-      <div class="portal-modal-content">
-        <h2>Visão do Portal</h2>
+      <div class="portal-modal-content-aries">
 
-        <div v-if="secretMovie" class="portal-movie">
-          <img :src="`https://image.tmdb.org/t/p/w500${secretMovie.poster_path}`" />
-          <h3>{{ secretMovie.title }}</h3>
-          <p>{{ new Date(secretMovie.release_date).toLocaleDateString('pt-BR') }}</p>
+        <div v-if="ariesMessage" class="portal-message">
+          <p>{{ ariesMessage }}</p>
         </div>
 
         <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -213,7 +177,7 @@ onMounted(async () => {
 
 .sign-container {
   min-height: 100vh;
-  background: radial-gradient(circle at bottom, #2a032f 0%, #1c022c 70%);
+  background: radial-gradient(circle at bottom, #4c0014 0%, #180008 70%);
   color: #f5d78a;
   font-family: "Poppins", sans-serif;
   padding: 3rem;
@@ -413,7 +377,8 @@ h1 {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* PORTAL ASTRAL */
+/*PORTAL ASTRAL ÁRIES*/
+
 .portal-wrapper {
   text-align: center;
   margin: 4rem 0;
@@ -424,121 +389,103 @@ h1 {
   height: 180px;
   margin: 0 auto;
   border-radius: 50%;
-  background: radial-gradient(circle, #ff8a47, #ff3c00, #9b0000);
-  box-shadow: 0 0 25px #ff4500, 0 0 60px #ff3200;
-  animation: portalPulse 2s infinite alternate ease-in-out;
+  background: radial-gradient(circle, #ffb347, #ff5e00, #b30000);
+  box-shadow: 
+    0 0 25px #ff5e00,
+    0 0 60px #ff2d00,
+    0 0 90px #b30000;
+  animation: portalPulseAries 2s infinite alternate ease-in-out;
   cursor: pointer;
   transition: 0.3s;
 }
 
 .portal:hover {
-  box-shadow: 0 0 40px #ff7e00, 0 0 90px #ff4500;
-  transform: scale(1.05);
+  box-shadow: 
+    0 0 40px #ff7a1a,
+    0 0 90px #ff3d00,
+    0 0 120px #b30000;
+  transform: scale(1.08);
 }
 
 .portal-text {
+  font-family: "Poppins", sans-serif;
   margin-top: 1rem;
-  color: #ffb284;
+  color: #ffd4d4;
   font-size: 1.1rem;
 }
 
-/* MODAL DO PORTAL */
+/* Portal Pulse Animation */
+@keyframes portalPulseAries {
+  from {
+    transform: scale(1);
+    box-shadow: 
+      0 0 25px #ff5e00,
+      0 0 60px #ff2d00;
+  }
+  to {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 40px #ff7a1a,
+      0 0 90px #ff3d00;
+  }
+}
+/*MODAL ÁRIES*/
+
 .portal-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 0, 20, 0.75);
+  background: rgba(40, 0, 0, 0.7); /* fundo vermelho escuro astral */
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
   z-index: 1000;
+  animation: fadeIn 0.3s ease;
 }
 
-.portal-modal-content {
-  background: #2a032f;
-  border: 2px solid #ffb284;
-  border-radius: 20px;
+.portal-modal-content-aries {
+  background: #fff0f0;
+  border: 1px solid #cc3a3a;
+  border-radius: 22px;
   padding: 2rem;
+  width: 85%;
+  max-width: 420px;
   text-align: center;
   animation: fadeIn 0.4s ease;
 }
 
-.portal-movie img {
-  width: 200px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(255, 80, 80, 0.5);
+.portal-message p {
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  color: #5a0000;
+  line-height: 1.5;
 }
 
+/* Botão de fechar */
 .close-portal {
   margin-top: 1.5rem;
   background: none;
-  border: 1px solid #ffb284;
-  color: #ffb284;
+  border: 1px solid #cc3a3a;
+  color: #cc3a3a;
   padding: .7rem 1.5rem;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
+  transition: 0.25s;
+  font-weight: 600;
 }
 
-@keyframes portalPulse {
-  from { transform: scale(0.95); }
-  to { transform: scale(1.05); }
+.close-portal:hover {
+  background: #cc3a3a;
+  color: #fff0f0;
 }
 
-/* CARROSSEL */
-.carousel-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-top: 4rem;
-  color: #ffeeb0;
-}
-
-.carousel {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.arrow {
-  background: rgba(255, 80, 80, 0.4);
-  border: none;
-  color: #ffeeb0;
-  font-size: 2.5rem;
-  width: 50px;
-  height: 120px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.arrow:hover {
-  background: rgba(255, 80, 80, 0.7);
-}
-
-.carousel-track {
-  overflow-x: auto;
-  display: flex;
-  gap: 1rem;
-  scroll-behavior: smooth;
-  padding: 1rem;
-}
-
-.carousel-track::-webkit-scrollbar {
-  display: none;
-}
-
-.carousel-item img {
-  height: 220px;
-  width: 150px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.carousel-item img:hover {
-  transform: scale(1.07);
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* GRID DE 20 FILMES */
