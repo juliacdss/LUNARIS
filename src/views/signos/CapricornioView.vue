@@ -58,6 +58,37 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
+
+// PORTAL
+const showPortalReveal = ref(false)
+const ariesMessage = ref(null)
+const ariesMessages = [
+  "Capricórnio, hoje o universo te lembra: a montanha é alta, mas você nasceu sabendo escalar.",
+
+"Seu foco é sua magia. Tudo que você decidir construir hoje, o tempo respeita.",
+
+"Nem todo peso é fardo — às vezes é só responsabilidade moldando seu brilho.",
+
+"A disciplina que você tem vale mais do que qualquer sorte que falte.",
+
+"Hoje você não precisa correr, só continuar. Capricórnio vence na constância.",
+
+"Seu silêncio é poderoso. Use ele pra ouvir o que sua ambição está te pedindo.",
+
+"O universo vê o seu esforço, mesmo quando ninguém comenta. Segue firme.",
+
+"Capricórnio, lembre-se: até o topo da montanha precisa de descanso no caminho.",
+
+"Hoje é dia de alinhar metas, cortar excessos e agir com precisão cirúrgica.",
+
+"Você é prova viva de que maturidade não envelhece — só fortalece."
+]
+
+const fetchAriesVision = () => {
+  ariesMessage.value =
+    ariesMessages[Math.floor(Math.random() * ariesMessages.length)]
+  showPortalReveal.value = true
+}
 </script>
 
 <template>
@@ -118,6 +149,22 @@ onMounted(async () => {
         <button class="close-btn" @click="showModal = false">Fechar</button>
       </div>
     </div>
+    <!-- PORTAL ÁRIANO -->
+   <div class="portal-wrapper">
+      <div class="portal" @click="fetchAriesVision"></div>
+      <p class="portal-text">Clique no portal e receba uma visão capricorniana</p>
+    </div>
+
+    <div v-if="showPortalReveal" class="portal-modal">
+      <div class="portal-modal-content-aries">
+
+        <div v-if="ariesMessage" class="portal-message">
+          <p>{{ ariesMessage }}</p>
+        </div>
+ 
+        <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -158,20 +205,28 @@ h1 {
   color: #bfbfbf;
 }
 
+/* BOTÃO GLASS */
 .explore-btn {
-  background: linear-gradient(135deg, #3a3a3d, #575759);
-  color: #e8e8e8;
-  border: 1px solid #6f6f73;
+  background: rgba(255, 255, 255, 0.08); /* mais transparente */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  
+  color: #fff4c2;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  border: 1.5px solid rgba(255, 255, 255, 0.45); /* borda mais forte de vidro */
   border-radius: 30px;
   padding: 0.9rem 2rem;
+  font-size: 1.1rem;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25); /* glow de vidro */
 }
+
 .explore-btn:hover {
-  background: #6b6b6f;
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(180, 180, 180, 0.4);
+  background: rgba(255, 255, 255, 0.15); /* mais “gelado” */
+  transform: scale(1.07);
+  box-shadow: 0 0 40px rgba(155, 150, 255, 0.55); /* glow rosado mais forte */
 }
 
 .movie-side {
@@ -254,70 +309,189 @@ h1 {
   font-size: 0.85rem;
 }
 
-/* MODAL */
+/* MODAL SIGNOS */
 .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999 !important;
+}
+
+.modal-box {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  color: #ffdcec;
+  width: 90%;
+  max-width: 450px;
+    /* EFEITO SUAVE */
+  opacity: 0;
+  transform: scale(0.85);
+  animation: modalOpen 0.35s ease forwards;
+}
+
+.sign-buttons {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .7rem;
+}
+
+.sign-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffdcec;
+  border-radius: 12px;
+  padding: .5rem .7rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+    font-family: "Poppins", sans-serif;
+}
+.sign-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.05);
+}
+
+.close-btn {
+  margin-top: 1.2rem;
+  background: none;
+  border: 1px solid #ffdcec;
+  color: #ffdcec;
+  padding: .6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background: #ffdcec;
+  color: #2c1f27;
+}
+
+@keyframes modalOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.portal-wrapper {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.portal {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, #5a4e3c, #3b352c, #1a1a1a); /* bege-terra → marrom escuro → preto */
+  box-shadow: 
+    0 0 25px #3b352c,
+    0 0 60px #2a2a2a,
+    0 0 90px #1a1a1a;
+  animation: portalPulseEarth 2s infinite alternate ease-in-out;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.portal:hover {
+  box-shadow: 
+    0 0 40px #6b5f4a,     /* marrom quente */
+    0 0 90px #3f3a33,
+    0 0 120px #1a1a1a;
+  transform: scale(1.08);
+}
+
+.portal-text {
+  font-family: "Poppins", sans-serif;
+  margin-top: 1rem;
+  color: #d8d5c5; /* bege acinzentado */
+  font-size: 1.1rem;
+}
+
+/* Portal Pulse Animation */
+@keyframes portalPulseEarth {
+  from {
+    transform: scale(1);
+    box-shadow: 
+      0 0 25px #3b352c,
+      0 0 60px #2a2a2a;
+  }
+  to {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 40px #6b5f4a,
+      0 0 90px #3f3a33;
+  }
+}
+
+.portal-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(10, 10, 10, 0.8);
+  background: rgba(15, 15, 15, 0.65); /* preto-fumê */
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: center;
-  z-index: 10;
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
 }
 
-.modal-box {
-  background: #1a1a1d;
-  border: 2px solid #7c7c7c;
-  border-radius: 20px;
-  padding: 2.5rem 3rem;
+.portal-modal-content-aries {
+  background: #2f2b26; /* marrom-terroso escuro */
+  border: 1px solid #4a453f; /* marrom acinzentado */
+  border-radius: 22px;
+  padding: 2rem;
+  width: 85%;
+  max-width: 420px;
   text-align: center;
-  color: #dcdcdc;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.4s ease;
 }
 
-.sign-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
+.portal-message p {
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  color: #e2dfd4; /* bege claro elegante */
+  line-height: 1.5;
 }
 
-.sign-btn {
-  background: #444449;
-  color: #e5e5e5;
-  border: 1px solid #777;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
-.sign-btn:hover {
-  background: #6b6b6f;
-  transform: scale(1.05);
-}
-
-.close-btn {
-  margin-top: 2rem;
+/* Botão de fechar */
+.close-portal {
+  margin-top: 1.5rem;
   background: none;
-  border: 1px solid #9b9b9b;
-  color: #dcdcdc;
-  padding: 0.5rem 1.2rem;
-  border-radius: 20px;
+  border: 1px solid #4a453f;
+  color: #e2dfd4;
+  padding: .7rem 1.5rem;
+  border-radius: 12px;
   cursor: pointer;
-  transition: 0.3s;
-}
-.close-btn:hover {
-  background: #dcdcdc;
-  color: #1a1a1d;
+  transition: 0.25s;
+  font-weight: 600;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+.close-portal:hover {
+  background: #4a453f; /* marrom acinzentado */
+  color: #f0ede5;      /* bege quase off-white */
 }
+
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 </style>

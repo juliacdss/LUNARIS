@@ -1,47 +1,55 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Vue3Lottie } from 'vue3-lottie'
-import Particles from 'vue3-particles'
 import api from '@/plugins/axios'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const isLoading = ref(true)
-const randomMovie = ref(null)
-const touroMovies = ref([])
 const showModal = ref(false)
+const randomMovie = ref(null)
+const taurusMovies = ref([])
+const isLoading = ref(true)
+// PORTAL
+const showPortalReveal = ref(false)
+const ariesMessage = ref(null)
 
 const signos = [
   'Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem',
   'Libra', 'Escorpião', 'Sagitário', 'Capricórnio', 'Aquário', 'Peixes'
 ]
 
-// gêneros associados a Touro (romance, drama, fantasia, música)
-const touroGenres = ['18', '10749', '10402', '14']
+const taurusGenres = ['10749', '18', '10402']
 
 const fetchRandomMovie = async () => {
-  const response = await api.get('discover/movie', {
-    params: {
-      with_genres: touroGenres.join(','),
-      language: 'pt-BR',
-      sort_by: 'popularity.desc',
-      page: Math.floor(Math.random() * 5) + 1,
-    },
-  })
-  const movies = response.data.results
-  randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
+  try {
+    const response = await api.get('discover/movie', {
+      params: {
+        with_genres: taurusGenres.join(','),
+        language: 'pt-BR',
+        sort_by: 'popularity.desc',
+        page: Math.floor(Math.random() * 5) + 1
+      }
+    })
+    const movies = response.data.results || []
+    if (movies.length) randomMovie.value = movies[Math.floor(Math.random() * movies.length)]
+  } catch (e) {
+    console.error('fetchRandomMovie error', e)
+  }
 }
 
-const fetchTouroMovies = async () => {
-  const response = await api.get('discover/movie', {
-    params: {
-      with_genres: touroGenres.join(','),
-      language: 'pt-BR',
-      sort_by: 'popularity.desc',
-      page: 1,
-    },
-  })
-  touroMovies.value = response.data.results.slice(0, 12)
+const fetchTaurusMovies = async () => {
+  try {
+    const response = await api.get('discover/movie', {
+      params: {
+        with_genres: taurusGenres.join(','),
+        language: 'pt-BR',
+        sort_by: 'popularity.desc',
+        page: 1
+      }
+    })
+    taurusMovies.value = (response.data.results || []).slice(0, 20)
+  } catch (e) {
+    console.error('fetchTaurusMovies error', e)
+  }
 }
 
 const openMovie = (movieId) => {
@@ -50,65 +58,45 @@ const openMovie = (movieId) => {
 
 onMounted(async () => {
   try {
-    await Promise.all([fetchRandomMovie(), fetchTouroMovies()])
+    await Promise.all([fetchRandomMovie(), fetchTaurusMovies()])
   } catch (e) {
     console.error(e)
   } finally {
     isLoading.value = false
   }
 })
+
+const ariesMessages = [
+   "Touro representa estabilidade emocional, força interior e determinação constante.",
+  "A energia taurina valoriza segurança, conforto e tudo aquilo que traz sensação de permanência.",
+  "Touro é guiado pela paciência, pela calma e pela busca por ambientes tranquilos.",
+  "O signo expressa afeto por meio de gestos concretos, consistência e presença.",
+  "A personalidade taurina é marcada por persistência e firmeza diante dos desafios.",
+  "Touro ensina a importância de construir com calma, sem pressa, mas com direção.",
+  "A energia desse signo busca beleza, harmonia e prazer nas pequenas coisas do cotidiano.",
+  "Taurinos têm forte conexão com o corpo, os sentidos e o mundo material.",
+  "A estabilidade é o centro da força de Touro: tudo o que faz, faz com base sólida.",
+  "Touro mostra que paciência e constância podem transformar qualquer plano em realidade."
+]
+
+const fetchAriesVision = () => {
+  ariesMessage.value =
+    ariesMessages[Math.floor(Math.random() * ariesMessages.length)]
+  showPortalReveal.value = true
+}
 </script>
 
 <template>
   <div class="sign-container">
-    <!-- Fundo animado -->
-    <Particles
-      id="touro-particles"
-      :options="{
-        background: { color: '#0c1911' },
-        fpsLimit: 60,
-        particles: {
-          color: { value: ['#a3ff80', '#88cc66', '#ffeeaa'] },
-          move: { enable: true, speed: 1.4, direction: 'top', outModes: 'out' },
-          number: { value: 90 },
-          opacity: { value: 0.5 },
-          size: { value: { min: 2, max: 5 } },
-          shape: { type: 'star' },
-          links: { enable: true, color: '#88cc66', opacity: 0.2 },
-        },
-        interactivity: {
-          events: { onHover: { enable: true, mode: 'repulse' } },
-          modes: { repulse: { distance: 120 } },
-        },
-        detectRetina: true,
-      }"
-    />
-
-    <!-- Lottie símbolo -->
-    <div class="touro-lottie">
-      <Vue3Lottie
-        animationLink="https://lottie.host/9ff4d8f3-ff62-4220-b604-b8ce52dd21a8/6Tk8VDZyUu.json"
-        :height="250"
-        :width="250"
-        :loop="true"
-        :autoplay="true"
-      />
-    </div>
-
     <div v-if="!isLoading" class="sign-content">
       <div class="text-side">
-        <h1>♉ Bem-vindo(a), <span>Touro</span>!</h1>
-        <p class="description">
-          Filme e prazer andam juntos para você. Este é o seu momento de relaxar,
-          saborear a vida e se conectar com o belo. 💚
-        </p>
-        <button @click="showModal = true" class="explore-btn">
-          Explorar outros signos
-        </button>
+        <h1>O universo escolheu um filme para você, Touro ♉︎</h1>
+        <p class="description">Paciente e sensível, Touro! Sua energia combina com histórias românticas, emocionantes e cheias de sentimento.</p>
+        <button @click="showModal = true" class="explore-btn">Explorar</button>
       </div>
 
       <div class="movie-side" v-if="randomMovie" @click="openMovie(randomMovie.id)">
-        <h2>🎬 Filme do dia</h2>
+        <h2>Filme do dia</h2>
         <img
           :src="`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`"
           :alt="randomMovie.title"
@@ -118,11 +106,14 @@ onMounted(async () => {
       </div>
     </div>
 
-    <section v-if="touroMovies.length" class="touro-library">
-      <h2 class="library-title">🌿 Filmes com energia de Touro</h2>
+    <div v-else class="loading"><p>Carregando a energia taurina...</p></div>
+
+    <!-- Lista taurina -->
+    <div v-if="taurusMovies.length" class="taurus-library">
+      <h2 class="library-title">Filmes com a suavidade de Touro</h2>
       <div class="movie-list">
         <div
-          v-for="movie in touroMovies"
+          v-for="movie in taurusMovies"
           :key="movie.id"
           class="movie-card"
           @click="openMovie(movie.id)"
@@ -134,17 +125,16 @@ onMounted(async () => {
           <div class="movie-details">
             <p class="movie-title">{{ movie.title }}</p>
             <p class="movie-release-date">
-              {{ new Date(movie.release_date).toLocaleDateString('pt-BR') }}
+              {{ movie.release_date ? new Date(movie.release_date).toLocaleDateString('pt-BR') : '' }}
             </p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Modal de outros signos -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-box">
-        <h3>✨ Escolha outro signo</h3>
+        <h3>Escolha outro signo</h3>
         <div class="sign-buttons">
           <button
             v-for="s in signos"
@@ -158,44 +148,45 @@ onMounted(async () => {
         <button class="close-btn" @click="showModal = false">Fechar</button>
       </div>
     </div>
+
+    <!-- PORTAL -->
+   <div class="portal-wrapper">
+      <div class="portal" @click="fetchAriesVision"></div>
+      <p class="portal-text">Clique no portal e receba uma visão taurina</p>
+    </div>
+
+    <div v-if="showPortalReveal" class="portal-modal">
+      <div class="portal-modal-content-aries">
+
+        <div v-if="ariesMessage" class="portal-message">
+          <p>{{ ariesMessage }}</p>
+        </div>
+ 
+        <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@600&family=Poppins:wght@400;600&display=swap');
 
 .sign-container {
-  position: relative;
   min-height: 100vh;
-  background: radial-gradient(circle at bottom, #163322 0%, #0c1911 70%);
-  color: #e6ffd8;
+  background: linear-gradient(180deg, #8d7bc0, #947fd6, #b8acf0);
+  color: #3b2a5f;
   font-family: "Poppins", sans-serif;
   padding: 3rem;
-  overflow: hidden;
-}
-
-/* Lottie animação */
-.touro-lottie {
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  opacity: 0.85;
-  animation: float 6s ease-in-out infinite;
-}
-@keyframes float {
-  0%, 100% { transform: translate(-50%, 0px); }
-  50% { transform: translate(-50%, 15px); }
+  justify-content: center;
 }
 
 .sign-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 10rem;
-  z-index: 2;
-  position: relative;
+  justify-content: center;
+  gap: 4rem;
+  margin-bottom: 4rem;
+  margin-left: 15rem;
 }
 
 .text-side {
@@ -203,162 +194,311 @@ onMounted(async () => {
   max-width: 500px;
 }
 
-.text-side h1 {
-  font-size: 2.6rem;
-  color: #e8ffe5;
-  text-shadow: 0 0 15px rgba(144, 255, 128, 0.6);
-}
-
-.text-side span {
-  color: #baff9e;
-  font-style: italic;
-}
-
-.description {
-  font-size: 1.2rem;
-  margin: 1.5rem 0 2rem;
-  color: #ccf5cc;
-}
-
-.explore-btn {
-  background: linear-gradient(90deg, #4fa869, #7dd87d);
-  color: #f2ffec;
-  border: none;
-  border-radius: 30px;
-  padding: 0.9rem 2rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 0 20px rgba(111, 214, 128, 0.4);
-}
-.explore-btn:hover {
-  transform: scale(1.05);
-  background: linear-gradient(90deg, #7dd87d, #a3f0a3);
-}
-
 .movie-side {
   flex: 1;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: 0.3s;
 }
 .movie-side:hover {
   transform: scale(1.05);
 }
+
 .movie-poster {
-  width: 260px;
+  width: 300px;
   border-radius: 20px;
-  box-shadow: 0 0 35px rgba(160, 255, 153, 0.5);
-}
-.movie-title {
-  margin-top: 1rem;
-  font-weight: 600;
-  color: #b4ffab;
+  box-shadow: 0 0 25px rgba(180, 150, 240, 0.4);
+  border: 1px solid rgba(72, 59, 109, 0.4);
 }
 
-/* Biblioteca de filmes */
-.touro-library {
-  margin-top: 4rem;
-  z-index: 2;
-  position: relative;
+h1 {
+  font-size: 2.6rem;
+  color: #3e3564;
+  text-shadow: 0 0 12px rgba(180, 150, 240, 0.3);
 }
+
+.description {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #473d70;
+}
+
+.movie-title {
+  margin-top: 1rem;
+  color: #bab1df;
+  font-weight: 600;
+}
+
+/* BOTÃO GLASS */
+.explore-btn {
+  background: rgba(255, 255, 255, 0.08); /* mais transparente */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  
+  color: #fff4c2;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  border: 1.5px solid rgba(255, 255, 255, 0.45); /* borda mais forte de vidro */
+  border-radius: 30px;
+  padding: 0.9rem 2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25); /* glow de vidro */
+}
+
+.explore-btn:hover {
+  background: rgba(255, 255, 255, 0.15); /* mais “gelado” */
+  transform: scale(1.07);
+  box-shadow: 0 0 40px rgba(155, 150, 255, 0.55); /* glow rosado mais forte */
+}
+
+.loading {
+  text-align: center;
+  color: #3b2a5f;
+  font-size: 1.2rem;
+}
+
+.taurus-library {
+  margin-top: 4rem;
+}
+
 .library-title {
   text-align: center;
   font-size: 2rem;
-  color: #e5ffd4;
+  color: #5e508f;
   margin-bottom: 2rem;
-  text-shadow: 0 0 10px rgba(144, 255, 128, 0.3);
+  text-shadow: 0 0 8px rgba(180, 150, 240, 0.3);
 }
+
 .movie-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1.5rem;
 }
+
 .movie-card {
   width: 180px;
-  border-radius: 15px;
+  border-radius: 12px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 15px rgba(111, 214, 128, 0.3);
+  background: rgba(111, 69, 150, 0.829);
+  border: 1px solid rgba(180, 150, 240, 0.25);
+  box-shadow: 0 0 15px rgba(180, 150, 240, 0.2);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
 .movie-card:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 0 30px rgba(170, 255, 150, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(160, 130, 240, 0.4);
 }
+
 .movie-card img {
   width: 100%;
   height: 270px;
   object-fit: cover;
 }
+
 .movie-details {
   padding: 0.5rem;
   text-align: center;
-  color: #e8ffe0;
 }
 
-/* Modal */
+.movie-release-date {
+  color: #a8a3b9;
+  font-size: 0.85rem;
+}
+
+/* MODAL SIGNOS */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(10, 20, 14, 0.8);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+ z-index: 9999 !important; /* GARANTE QUE FIQUE POR CIMA */
 }
 
 .modal-box {
-  background-color: rgba(15, 31, 23, 0.95);
-  border: 2px solid #b4ffab;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  padding: 2rem;
   border-radius: 20px;
-  padding: 2.5rem 3rem;
   text-align: center;
-  color: #d4f2c3;
-  max-width: 500px;
-  animation: fadeIn 0.3s ease-in-out;
+  color: #ffdcec;
+  width: 90%;
+  max-width: 450px;
+  animation: modalOpen 0.35s ease forwards;
+  will-change: opacity, transform;
 }
 
 .sign-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-}
-.sign-btn {
-  background: #4e9f61;
-  border: none;
-  border-radius: 20px;
-  color: #f2ffec;
-  font-weight: 600;
-  padding: 0.6rem 1.2rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.sign-btn:hover {
-  background: #6fd680;
-  transform: scale(1.05);
-}
-.close-btn {
-  margin-top: 2rem;
-  background: none;
-  border: 1px solid #b4ffab;
-  color: #d4f2c3;
-  border-radius: 20px;
-  padding: 0.5rem 1.2rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.close-btn:hover {
-  background-color: #b4ffab;
-  color: #0f1f17;
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .7rem;
 }
 
+.sign-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffdcec;
+  border-radius: 12px;
+  padding: .5rem .7rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+    font-family: "Poppins", sans-serif;
+}
+.sign-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.05);
+}
+
+.close-btn {
+  margin-top: 1.2rem;
+  background: none;
+  border: 1px solid #ffdcec;
+  color: #ffdcec;
+  padding: .6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background: #ffdcec;
+  color: #2c1f27;
+}
+
+/* PORTAL ASTRAL GÊMEOS */
+
+.portal-wrapper {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+/* portal geminiano: rosa → verde → turquesa */
+.portal {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffb3e6, #ff66c4, #40e0d0);
+  box-shadow: 
+    0 0 25px #ff66c4,
+    0 0 60px #40e0d0,
+    0 0 90px #00b894;
+  animation: portalPulseGemini 2s infinite alternate ease-in-out;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.portal:hover {
+  box-shadow: 
+    0 0 40px #ff99dd,
+    0 0 90px #5ef2dc,
+    0 0 120px #00d1a0;
+  transform: scale(1.08);
+}
+
+.portal-text {
+  font-family: "Poppins", sans-serif;
+  margin-top: 1rem;
+  color: #eaffef;
+  font-size: 1.1rem;
+}
+
+/* Portal Pulse Animation — rosa + verde */
+@keyframes portalPulseGemini {
+  from {
+    transform: scale(1);
+    box-shadow: 
+      0 0 25px #ff66c4,
+      0 0 60px #40e0d0;
+  }
+  to {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 40px #ff99dd,
+      0 0 90px #5ef2dc;
+  }
+}
+
+/* MODAL GÊMEOS */
+
+.portal-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(180, 255, 230, 0.35); /* verde menta translúcido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.portal-modal-content-aries {
+  background: #fff6fb; /* rosa muuuito claro */
+  border: 1px solid #8de4c7; /* verde menta */
+  border-radius: 22px;
+  padding: 2rem;
+  width: 85%;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.portal-message p {
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  color: #006f52; /* verde escuro */
+  line-height: 1.5;
+}
+
+/* Botão de fechar — rosa e verde */
+.close-portal {
+  margin-top: 1.5rem;
+  background: none;
+  border: 1px solid #8de4c7;
+  color: #009768;
+  padding: .7rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-weight: 600;
+}
+
+.close-portal:hover {
+  background: #8de4c7;
+  color: #004c36;
+}
+
+/* Fade animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sign-container {
+  position: relative; /* ADICIONA ISSO */
+  z-index: 1;
+}
+
+@keyframes modalOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
