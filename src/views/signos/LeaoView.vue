@@ -65,6 +65,24 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
+
+// PORTAL
+const showPortalReveal = ref(false)
+const ariesMessage = ref(null)
+const ariesMessages = [
+  "Leão, hoje o Sol ilumina seus passos: confie no que você já conquistou.",
+  "Sua luz natural abre portas hoje — mostre quem você é sem medo.",
+  "Hoje, sua criatividade será sua maior força. Deixe fluir.",
+  "O universo pede que você valorize suas vitórias, até as pequenas.",
+  "Confie no seu instinto. Ele está mais afiado que nunca.",
+  "O dia pede presença: esteja onde seu coração se sente visto."
+]
+
+const fetchAriesVision = () => {
+  ariesMessage.value =
+    ariesMessages[Math.floor(Math.random() * ariesMessages.length)]
+  showPortalReveal.value = true
+}
 </script>
 
 <template>
@@ -135,6 +153,23 @@ onMounted(async () => {
         </div>
 
         <button class="close-btn" @click="showModal = false">Fechar</button>
+      </div>
+    </div>
+
+    <!-- PORTAL ÁRIANO -->
+   <div class="portal-wrapper">
+      <div class="portal" @click="fetchAriesVision"></div>
+      <p class="portal-text">Clique no portal e receba uma visão leonina</p>
+    </div>
+
+    <div v-if="showPortalReveal" class="portal-modal">
+      <div class="portal-modal-content-aries">
+
+        <div v-if="ariesMessage" class="portal-message">
+          <p>{{ ariesMessage }}</p>
+        </div>
+ 
+        <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
       </div>
     </div>
   </div>
@@ -358,4 +393,117 @@ h1 {
   background: #ffeeb0;
   color: #1a0328;
 }
+
+/* PORTAL ASTRAL ÁRIES */
+
+.portal-wrapper {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.portal {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff2b3, #ffbb33, #ff9900);
+  box-shadow: 
+    0 0 25px #ffbb33,
+    0 0 60px #ff9900,
+    0 0 90px #cc7a00;
+  animation: portalPulseAries 2s infinite alternate ease-in-out;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.portal:hover {
+  box-shadow: 
+    0 0 40px #ffd45e,
+    0 0 90px #ffb733,
+    0 0 120px #cc7a00;
+  transform: scale(1.08);
+}
+
+.portal-text {
+  font-family: "Poppins", sans-serif;
+  margin-top: 1rem;
+  color: #fff6cc;
+  font-size: 1.1rem;
+}
+
+/* Portal Pulse Animation */
+@keyframes portalPulseAries {
+  from {
+    transform: scale(1);
+    box-shadow: 
+      0 0 25px #ffbb33,
+      0 0 60px #ff9900;
+  }
+  to {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 40px #ffd45e,
+      0 0 90px #ffb733;
+  }
+}
+
+/* MODAL ÁRIES */
+
+.portal-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(80, 60, 0, 0.7); /* dourado escuro translúcido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.portal-modal-content-aries {
+  background: #fff8e1;
+  border: 1px solid #e6a400;
+  border-radius: 22px;
+  padding: 2rem;
+  width: 85%;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.portal-message p {
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  color: #614800;
+  line-height: 1.5;
+}
+
+/* Botão de fechar */
+.close-portal {
+  margin-top: 1.5rem;
+  background: none;
+  border: 1px solid #e6a400;
+  color: #e6a400;
+  padding: .7rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-weight: 600;
+}
+
+.close-portal:hover {
+  background: #e6a400;
+  color: #fff8e1;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 </style>
