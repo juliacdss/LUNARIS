@@ -168,7 +168,7 @@ const fetchAriesVision = () => {
 <!-- PORTAL ÁRIANO -->
    <div class="portal-wrapper">
       <div class="portal" @click="fetchAriesVision"></div>
-      <p class="portal-text">Clique no portal e receba uma visão ariana</p>
+      <p class="portal-text">Clique no portal e receba uma visão libriana</p>
     </div>
 
     <div v-if="showPortalReveal" class="portal-modal">
