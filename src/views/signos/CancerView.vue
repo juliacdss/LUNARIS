@@ -10,16 +10,6 @@ const randomMovie = ref(null)
 const cancerMovies = ref([])
 const isLoading = ref(true)
 
-const secretMovie = ref(null)
-const showPortalReveal = ref(false)
-
-const carouselTrack = ref(null)
-const scrollCarousel = (amount) => {
-  if (carouselTrack.value) {
-    carouselTrack.value.scrollBy({ left: amount, behavior: "smooth" })
-  }
-}
-
 // Signos
 const signos = [
   'Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem',
@@ -57,22 +47,6 @@ const fetchCancerMovies = async () => {
   cancerMovies.value = response.data.results.slice(0, 20)
 }
 
-// PORTAL
-const fetchSecretMovie = async () => {
-  const response = await api.get('discover/movie', {
-    params: {
-      with_genres: cancerGenres.join(','),
-      language: 'pt-BR',
-      sort_by: 'popularity.desc',
-      page: Math.floor(Math.random() * 4) + 1
-    }
-  })
-
-  const movies = response.data.results
-  secretMovie.value = movies[Math.floor(Math.random() * movies.length)]
-  showPortalReveal.value = true
-}
-
 const openMovie = (movieId) => {
   router.push({ name: 'MovieDetails', params: { movieId } })
 }
@@ -86,6 +60,37 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
+
+// PORTAL
+const showPortalReveal = ref(false)
+const ariesMessage = ref(null)
+const ariesMessages = [
+"Hoje seu coração sente antes de entender — e isso é um superpoder, não um defeito.",
+
+"A vida te pede suavidade, mas também pede coragem para pôr limites sem culpa.",
+
+"Seu instinto não erra: se algo te inquieta, é porque sua intuição já sabe o caminho.",
+
+"Cuide de você como você cuida dos outros — o universo está te observando e sorrindo.",
+
+"Você não é 'sensível demais'. Você só enxerga profundezas que os outros fingem não ver.",
+
+"Seja gentil com suas marés internas: até o oceano precisa se recolher para voltar gigante.",
+
+"Hoje é um bom dia para se cercar do que é seguro, mas não se esconder do que é novo.",
+
+"Seu carinho é abrigo — mas não ofereça sua casa para quem não sabe entrar descalço.",
+
+"No silêncio, a Lua acende respostas que você tentou ignorar. O que vem é cura.",
+
+"Respira. Você não está voltando ao passado — está fechando ciclos com amor."
+]
+
+const fetchAriesVision = () => {
+  ariesMessage.value =
+    ariesMessages[Math.floor(Math.random() * ariesMessages.length)]
+  showPortalReveal.value = true
+}
 </script>
 
 <template>
@@ -138,25 +143,6 @@ onMounted(async () => {
 
     <div v-else class="loading"><p>Carregando o filme do universo...</p></div>
 
-    <!-- carrossel -->
-    <h2 class="carousel-title">Filmes com vibe canceriana</h2>
-    <div class="carousel">
-      <button class="arrow left" @click="scrollCarousel(-350)">‹</button>
-
-      <div class="carousel-track" ref="carouselTrack">
-        <div
-          v-for="movie in cancerMovies"
-          :key="movie.id"
-          class="carousel-item"
-          @click="openMovie(movie.id)"
-        >
-          <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" />
-        </div>
-      </div>
-
-      <button class="arrow right" @click="scrollCarousel(350)">›</button>
-    </div>
-
     <!-- grid -->
     <div class="cancer-library">
       <h2 class="library-title">Biblioteca Canceriana</h2>
@@ -176,28 +162,22 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-
-    <!-- portal lunar -->
-    <div class="portal-wrapper">
-      <div class="portal" @click="fetchSecretMovie"></div>
-      <p class="portal-text">Toque no portal e receba uma mensagem da lua</p>
+<!-- PORTAL ÁRIANO -->
+   <div class="portal-wrapper">
+      <div class="portal" @click="fetchAriesVision"></div>
+      <p class="portal-text">Clique no portal e receba uma visão canceriana</p>
     </div>
 
-    <!-- modal portal -->
     <div v-if="showPortalReveal" class="portal-modal">
-      <div class="portal-modal-content">
-        <h2>Mensagem da Lua</h2>
+      <div class="portal-modal-content-aries">
 
-        <div v-if="secretMovie" class="portal-movie">
-          <img :src="`https://image.tmdb.org/t/p/w500${secretMovie.poster_path}`" />
-          <h3>{{ secretMovie.title }}</h3>
-          <p>{{ new Date(secretMovie.release_date).toLocaleDateString('pt-BR') }}</p>
+        <div v-if="ariesMessage" class="portal-message">
+          <p>{{ ariesMessage }}</p>
         </div>
-
+ 
         <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -206,9 +186,14 @@ onMounted(async () => {
 
 .sign-container {
   min-height: 100vh;
-  color: #fff;
   padding: 3rem;
     font-family: "Poppins", sans-serif;
+    background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #e6e7e9 40%,
+    #cfd1d4 100%
+  );
 }
 
 /* CONTEÚDO PRINCIPAL */
@@ -243,25 +228,25 @@ onMounted(async () => {
 
 h1 {
   font-size: 2.6rem;
-  color: #ffe8f6;
+  color: #f14ab1;
   text-shadow: 0 0 10px rgba(255, 200, 230, 0.7);
 }
 
 .description {
   font-size: 1.2rem;
   margin-bottom: 2rem;
-  color: #f7dde8;
+  color: #f892bc;
 }
 
 .movie-title {
   margin-top: 1rem;
   font-weight: 600;
-  color: #fff1fa;
+  color: #ff7bd1;
 }
 
 /* BOTÃO GLASS */
 .explore-btn {
-  background: rgba(255, 255, 255, 0.08); /* mais transparente */
+  background: rgba(0, 0, 0, 0.08); /* mais transparente */
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   
@@ -295,7 +280,7 @@ h1 {
 .library-title {
   text-align: center;
   font-size: 2rem;
-  color: #ffe8f6;
+  color: #ff89d2;
   margin-bottom: 2rem;
 }
 
@@ -531,4 +516,115 @@ h1 {
     transform: scale(1);
   }
 }
+
+.portal-wrapper {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.portal {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, #e8f3ff, #d6d6d6, #b0b0b0); /* azul pastel → cinza claro → cinza médio */
+  box-shadow: 
+    0 0 25px #d6d6d6,
+    0 0 60px #b0b0b0,
+    0 0 90px #8a8a8a;
+  animation: portalPulsePastel 2s infinite alternate ease-in-out;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.portal:hover {
+  box-shadow: 
+    0 0 40px #f2d6e6, /* rosa pastel */
+    0 0 90px #c8d9ff, /* azul pastel */
+    0 0 120px #9c9c9c; /* cinza médio */
+  transform: scale(1.08);
+}
+
+.portal-text {
+  font-family: "Poppins", sans-serif;
+  margin-top: 1rem;
+  color: #855c85; /* rosa pastel quase branco */
+  font-size: 1.1rem;
+}
+
+/* Portal Pulse Animation */
+@keyframes portalPulsePastel {
+  from {
+    transform: scale(1);
+    box-shadow: 
+      0 0 25px #d6d6d6,
+      0 0 60px #b0b0b0;
+  }
+  to {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 40px #f2d6e6, /* rosa pastel */
+      0 0 90px #c8d9ff; /* azul pastel */
+  }
+}
+
+/* MODAL */
+
+.portal-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(80, 80, 80, 0.6); /* cinza escuro translúcido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.portal-modal-content-aries {
+  background: #f6f7ff; /* azul pastel quase branco */
+  border: 1px solid #c4c4c4; /* prata */
+  border-radius: 22px;
+  padding: 2rem;
+  width: 85%;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.portal-message p {
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  color: #6b6b6b; /* cinza médio */
+  line-height: 1.5;
+}
+
+/* Botão de fechar */
+.close-portal {
+  margin-top: 1.5rem;
+  background: none;
+  border: 1px solid #c4c4c4; /* prata */
+  color: #7d7d7d;
+  padding: .7rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-weight: 600;
+}
+
+.close-portal:hover {
+  background: #c4c4c4; /* prata */
+  color: #f6f7ff; /* azul pastel quase branco */
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 </style>
