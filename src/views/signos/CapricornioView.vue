@@ -95,7 +95,7 @@ const fetchAriesVision = () => {
   <div class="sign-container">
     <div v-if="!isLoading" class="sign-content">
       <div class="text-side">
-        <h1>Um filme sóbrio para você, Capricórnio ♑︎</h1>
+        <h1>O universo escolheu um filme para você, Capricórnio ♑︎</h1>
         <p class="description">Determinação, profundidade e histórias marcantes — perfeitas para sua energia.</p>
         <button @click="showModal = true" class="explore-btn">Explorar</button>
       </div>

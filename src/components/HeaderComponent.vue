@@ -13,7 +13,6 @@ import logo from '@/assets/images/logo.png'
       <nav>
         <router-link to="/">Início</router-link>
         <router-link to="/filmes">Filmes</router-link>
-        <router-link to="/tv">Séries</router-link>
       </nav>
     </div>
   </header>
