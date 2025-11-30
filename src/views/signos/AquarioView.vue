@@ -10,16 +10,6 @@ const randomMovie = ref(null)
 const aquarioMovies = ref([])
 const isLoading = ref(true)
 
-const secretMovie = ref(null)
-const showPortalReveal = ref(false)
-
-const carouselTrack = ref(null)
-const scrollCarousel = (amount) => {
-  if (carouselTrack.value) {
-    carouselTrack.value.scrollBy({ left: amount, behavior: "smooth" })
-  }
-}
-
 // Signos
 const signos = [
   'Áries', 'Touro', 'Gêmeos', 'Câncer', 'Leão', 'Virgem',
@@ -57,22 +47,6 @@ const fetchAquariusMovies = async () => {
   aquarioMovies.value = response.data.results.slice(0, 20)
 }
 
-// PORTAL FUTURISTA
-const fetchSecretMovie = async () => {
-  const response = await api.get('discover/movie', {
-    params: {
-      with_genres: aquariusGenres.join(','),
-      language: 'pt-BR',
-      sort_by: 'popularity.desc',
-      page: Math.floor(Math.random() * 4) + 1
-    }
-  })
-
-  const movies = response.data.results
-  secretMovie.value = movies[Math.floor(Math.random() * movies.length)]
-  showPortalReveal.value = true
-}
-
 const openMovie = (movieId) => {
   router.push({ name: 'MovieDetails', params: { movieId } })
 }
@@ -86,6 +60,37 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
+
+// PORTAL
+const showPortalReveal = ref(false)
+const ariesMessage = ref(null)
+const ariesMessages = [
+  "Hoje sua mente toca o futuro antes de todo mundo. Confie nas ideias que chegam do nada.",
+
+"O universo te sopra um vento novo — abrace o que é diferente, é ali que você brilha.",
+
+"Aquário, o dia pede invenção: nada de repetir padrões que não fazem sentido pra você.",
+
+"Sua energia está elétrica — perfeita para criar algo inesperado.",
+
+"Hoje você atrai conexões que expandem sua visão do mundo.",
+
+"O céu abre espaço para mudanças: deixe entrar o que te dá liberdade.",
+
+"Aquário, sua originalidade é o seu poder. Não esconda aquilo que te torna único.",
+
+"O dia pede desapego mental: limpe pensamentos que prendem sua criatividade.",
+
+"O universo vibra a seu favor quando você ousa ser diferente.",
+
+"Hoje, um insight pode mudar tudo — fique atenta aos flashes de intuição.",
+]
+
+const fetchAriesVision = () => {
+  ariesMessage.value =
+    ariesMessages[Math.floor(Math.random() * ariesMessages.length)]
+  showPortalReveal.value = true
+}
 </script>
 
 <template>
@@ -145,25 +150,6 @@ onMounted(async () => {
     <!-- loading -->
     <div v-else class="loading"><p>Carregando o filme do universo...</p></div>
 
-    <!-- carrossel -->
-    <h2 class="carousel-title">Filmes com vibe aquariana</h2>
-    <div class="carousel">
-      <button class="arrow left" @click="scrollCarousel(-350)">‹</button>
-
-      <div class="carousel-track" ref="carouselTrack">
-        <div
-          v-for="movie in aquarioMovies"
-          :key="movie.id"
-          class="carousel-item"
-          @click="openMovie(movie.id)"
-        >
-          <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" />
-        </div>
-      </div>
-
-      <button class="arrow right" @click="scrollCarousel(350)">›</button>
-    </div>
-
     <!-- grid -->
     <div class="aries-library">
       <h2 class="library-title">Biblioteca Aquariana</h2>
@@ -184,27 +170,22 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- portal tech -->
-    <div class="portal-wrapper">
-      <div class="portal" @click="fetchSecretMovie"></div>
-      <p class="portal-text">Clique no portal e receba uma visão</p>
+    <!-- PORTAL ÁRIANO -->
+   <div class="portal-wrapper">
+      <div class="portal" @click="fetchAriesVision"></div>
+      <p class="portal-text">Clique no portal e receba uma visão ariana</p>
     </div>
 
-    <!-- modal portal -->
     <div v-if="showPortalReveal" class="portal-modal">
-      <div class="portal-modal-content">
-        <h2>Visão Aquariana</h2>
+      <div class="portal-modal-content-aries">
 
-        <div v-if="secretMovie" class="portal-movie">
-          <img :src="`https://image.tmdb.org/t/p/w500${secretMovie.poster_path}`" />
-          <h3>{{ secretMovie.title }}</h3>
-          <p>{{ new Date(secretMovie.release_date).toLocaleDateString('pt-BR') }}</p>
+        <div v-if="ariesMessage" class="portal-message">
+          <p>{{ ariesMessage }}</p>
         </div>
-
+ 
         <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -216,6 +197,7 @@ onMounted(async () => {
   color: #bcecff;
   font-family: "Poppins", sans-serif;
   padding: 3rem;
+  background: linear-gradient(135deg, #0a2a43, #115d9c, #30a4d4); /* azul profundo → azul elétrico */
 }
 
 /* CONTEÚDO PRINCIPAL */
@@ -285,7 +267,7 @@ h1 {
 }
 
 .explore-btn:hover {
-  background: rgba(255, 255, 255, 0.15); /* mais “gelado” */
+  background: rgba(255, 255, 255, 0.15); /* mais "gelado", */
   transform: scale(1.07);
   box-shadow: 0 0 40px rgba(155, 150, 255, 0.55); /* glow rosado mais forte */
 }
@@ -423,132 +405,6 @@ h1 {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* PORTAL ASTRAL AQUARIANO */
-.portal-wrapper {
-  text-align: center;
-  margin: 4rem 0;
-}
-
-.portal {
-  width: 180px;
-  height: 180px;
-  margin: 0 auto;
-  border-radius: 50%;
-  background: radial-gradient(circle, #6af0ff, #00d4ff, #005b99);
-  box-shadow: 0 0 25px #00d4ff, 0 0 60px #008cff;
-  animation: portalPulse 2s infinite alternate ease-in-out;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.portal:hover {
-  box-shadow: 0 0 40px #6af0ff, 0 0 90px #00d4ff;
-  transform: scale(1.05);
-}
-
-.portal-text {
-  margin-top: 1rem;
-  color: #9bdcff;
-  font-size: 1.1rem;
-}
-
-/* MODAL PORTAL */
-.portal-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(4, 0, 22, 0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-}
-
-.portal-modal-content {
-  background: #140036;
-  border: 2px solid #9bdcff;
-  border-radius: 20px;
-  padding: 2rem;
-  text-align: center;
-  animation: fadeIn 0.4s ease;
-}
-
-.portal-movie img {
-  width: 200px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(100, 200, 255, 0.5);
-}
-
-.close-portal {
-  margin-top: 1.5rem;
-  background: none;
-  border: 1px solid #9bdcff;
-  color: #9bdcff;
-  padding: .7rem 1.5rem;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-/* ANIMAÇÃO */
-@keyframes portalPulse {
-  from { transform: scale(0.95); }
-  to { transform: scale(1.05); }
-}
-
-/* CARROSSEL */
-.carousel-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-top: 4rem;
-  color: #c0f5ff;
-}
-
-.carousel {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.arrow {
-  background: rgba(150, 200, 255, 0.3);
-  border: none;
-  color: #d8faff;
-  font-size: 2.5rem;
-  width: 50px;
-  height: 120px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.arrow:hover {
-  background: rgba(150, 200, 255, 0.6);
-}
-
-.carousel-track {
-  overflow-x: auto;
-  display: flex;
-  gap: 1rem;
-  scroll-behavior: smooth;
-  padding: 1rem;
-}
-.carousel-track::-webkit-scrollbar {
-  display: none;
-}
-
-.carousel-item img {
-  height: 220px;
-  width: 150px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.carousel-item img:hover {
-  transform: scale(1.07);
-}
-
 /* GRID */
 .movie-grid {
   margin-top: 2rem;
@@ -587,6 +443,114 @@ h1 {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+.portal-wrapper {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.portal {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a8e6ff, #4fc3ff, #005f99);
+  box-shadow: 
+    0 0 25px #4fc3ff,
+    0 0 60px #1a9cff,
+    0 0 90px #005f99;
+  animation: portalPulseAquario 2s infinite alternate ease-in-out;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.portal:hover {
+  box-shadow: 
+    0 0 40px #7ed7ff,
+    0 0 90px #33b6ff,
+    0 0 120px #005f99;
+  transform: scale(1.08);
+}
+
+.portal-text {
+  font-family: "Poppins", sans-serif;
+  margin-top: 1rem;
+  color: #d9f6ff;
+  font-size: 1.1rem;
+}
+
+/* Portal Pulse Animation */
+@keyframes portalPulseAquario {
+  from {
+    transform: scale(1);
+    box-shadow: 
+      0 0 25px #4fc3ff,
+      0 0 60px #1a9cff;
+  }
+  to {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 40px #7ed7ff,
+      0 0 90px #33b6ff;
+  }
+}
+
+.portal-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 40, 70, 0.7); /* fundo azul escuro astral */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.portal-modal-content-aries {
+  background: #e5f8ff;
+  border: 1px solid #4fc3ff;
+  border-radius: 22px;
+  padding: 2rem;
+  width: 85%;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.portal-message p {
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  color: #003a57;
+  line-height: 1.5;
+}
+
+/* Botão de fechar */
+.close-portal {
+  margin-top: 1.5rem;
+  background: none;
+  border: 1px solid #4fc3ff;
+  color: #4fc3ff;
+  padding: .7rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-weight: 600;
+}
+
+.close-portal:hover {
+  background: #4fc3ff;
+  color: #e5f8ff;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 </style>
