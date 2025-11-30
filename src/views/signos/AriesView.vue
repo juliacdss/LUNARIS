@@ -154,7 +154,7 @@ onMounted(async () => {
     </div>
 
     <!-- PORTAL ÁRIANO -->
-    <div class="portal-wrapper">
+   <div class="portal-wrapper">
       <div class="portal" @click="fetchAriesVision"></div>
       <p class="portal-text">Clique no portal e receba uma visão ariana</p>
     </div>
@@ -165,7 +165,7 @@ onMounted(async () => {
         <div v-if="ariesMessage" class="portal-message">
           <p>{{ ariesMessage }}</p>
         </div>
-
+ 
         <button class="close-portal" @click="showPortalReveal = false">Fechar</button>
       </div>
     </div>
