@@ -79,6 +79,7 @@ const openSign = (s) => {
   transition: .2s;
   font-size: 1rem;
   font-weight: 500;
+  font-family: "Poppins", sans-serif;
 }
 
 .sign-btn:hover {

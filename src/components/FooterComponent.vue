@@ -8,7 +8,6 @@
       <div class="footer-links">
         <router-link to="/">Início</router-link>
         <router-link to="/filmes">Filmes</router-link>
-        <router-link to="/tv">Séries</router-link>
       </div>
 
       <p class="footer-credits">
